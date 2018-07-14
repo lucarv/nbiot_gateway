@@ -8,22 +8,22 @@ Super simple NBIOT -> Azure IoT HuB cloud-gw
 
 
 
-![](static/telemetry.png?raw=true)
+
   
 **Use Case 1:**  
 An udp device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
 The message can be anything you want and in the device simulator included in this repo you can type whatever you like at the command prompt.  
-
-![](static/c2d.png?raw=true)
+![](static/telemetry.png?raw=true)
   
 **Use Case 2:**  
 An application requests to send a message to a device as a raw datagram via the GW.    
+![](static/c2d.png?raw=true)
 
-## How it works
+## How to run it locally
 1. Provision your devices on your IoT Hub.
 2. Start the GW (npm start). Edit the environment variables to point at the correct IoT Hub.
 3. Get the [AAA Simulator](github.lucarv/aaa_electron).  
-4. start the NBIOT device (n electron app found in this repo under udp_device - start with npm or just compile for your environment). This will simulate the sending of telemetry messages with the selected frequency. Edit the environment variables to point at the correct Gateway.  
+4. start an NBIOT device (n electron app found in this repo under udp_device - start with npm or just compile for your environment). This will simulate the sending of telemetry messages with the selected frequency. Edit the environment variables to point at the correct Gateway.  
   
 
 ## Gateway considerations
