@@ -1,0 +1,22 @@
+{
+  "name": "udp2aziothub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cluster.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node cluster"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iot-amqp-base": "1.5.0",
+    "azure-iot-common": "1.5.0",
+    "azure-iot-device": "^1.5.0",
+    "azure-iothub": "^1.7.0",
+    "dotenv": "^6.0.0",
+    "koa": "^2.5.2",
+    "koa-body": "^4.0.4",
+    "koa-router": "^7.4.0"
+  }
+}
