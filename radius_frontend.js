@@ -5,13 +5,14 @@ var radiusfe = dgram.createSocket("udp4");
 const debug = require('debug')('telenet-udp-gw')
 const name = 'radius-front-end'
 radiusfe.on("message", function (msg, rinfo) {
+
+
   try {
-    var packet = radius.decode({
-        packet: msg,
-        secret: secret
+    var packet = radius.decode_without_secret({
+        packet: msg
       }),
       type;
-
+      
     switch (packet.attributes["Acct-Status-Type"]) {
       case 'Start':
         type = 'pdp_ON';
@@ -29,7 +30,7 @@ radiusfe.on("message", function (msg, rinfo) {
     process.send({
       type: type,
       device: {
-        id: packet.attributes["User-Name"],
+        id: packet.attributes["3GPP-IMEISV"],
         ip: packet.attributes["Framed-IP-Address"]
       }
     });
@@ -38,5 +39,6 @@ radiusfe.on("message", function (msg, rinfo) {
     return;
   }
 });
+
 debug(`radius client spawned: ${process.pid}`);
 module.exports = radiusfe;

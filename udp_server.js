@@ -32,7 +32,7 @@ gw.on('message', (buffer, rinfo) => {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'c2d':
-			debug('[master] c2d ------> [udpgw]: ' + msg.payload);
+			debug('[master] c2d ------> [udpgw]: ' + msg.deviceIp);
 			let device = dgram.createSocket('udp' + process.env.IPV);
 			device.bind({
 				address: '0.0.0.0',

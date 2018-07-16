@@ -1,6 +1,7 @@
 "use strict";
 require('dotenv').config();
 var connectionString = process.env.HUBCS;
+var _ = require('underscore')
 const debug = require('debug')('telenet-udp-gw');
 const name = 'hub-proxy';
 
@@ -13,10 +14,21 @@ const gateway = new Gateway();
 var devices = [];
 var addDevicePromises = [];
 
-var latestMessage = {};
+function foundId(id){
+	debug('id: ' + id);
+}
 gateway.on('message', function (message) {
-	latestMessage = message;
-	debug(message);
+	let payload = message.data.toString();
+	let deviceId = message.to.toString().split("/")[2];
+	debug(deviceId);
+	
+	var found = devices.find(o => o.id === deviceId);
+
+	process.send({
+		type: 'c2d',
+		deviceIp: found.ip,
+		payload: payload
+	});
 });
 
 var start = async function () {
@@ -32,7 +44,7 @@ process.on('message', async function (msg) {
 	switch (msg.type) {
 		case 'conn_DEV':
 			// check if device has been provisioned, if not, silently drop it
-			debug(msg.device.id);
+			debug('[master] PDP_ON -------> [hub_proxy]: ' + msg.device.id);
 			registry.get(msg.device.id, async function (err, res) {
 				if (err) 
 					debug(err.name)

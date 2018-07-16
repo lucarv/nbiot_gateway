@@ -41,7 +41,7 @@ if (cluster.isMaster) {
 					});
 					break;
 				case 'c2d':
-					debug('[iot_dev] c2d ------> [master]');
+					debug('[hub_proxy] c2d ------> [master]');
 					worker.send(msg); // just forward to the UDPGW worker
 					break;
 				default:
