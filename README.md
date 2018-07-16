@@ -23,7 +23,7 @@ An application requests to send a message to a device as a raw datagram via the 
 1. Provision your devices on your IoT Hub.
 2. Start the GW (npm start). Edit the environment variables to point at the correct IoT Hub.
 3. Get the [AAA Simulator](github.lucarv/aaa_electron).  
-4. start an NBIOT device (n electron app found in this repo under udp_device - start with npm or just compile for your environment). This will simulate the sending of telemetry messages with the selected frequency. Edit the environment variables to point at the correct Gateway.  
+4. Get an [NBIOT device simulator](https://github.com/lucarv/nbiot_dev_sim).  
   
 
 ## Gateway considerations
@@ -40,4 +40,4 @@ The GW uses The following ports:
 Both the GW and the IoT Hub are payload agnostic, and it is up to the application layer to parse the raw message.
 
 **urgents todo:** 
-* CoAP OBSERVE
+* CoAP Support
