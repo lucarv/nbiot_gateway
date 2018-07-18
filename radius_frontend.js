@@ -1,12 +1,10 @@
+const debug = require('debug')('nbiot_cloud_gw')
 var radius = require('./lib/radius');
 var dgram = require("dgram");
-var secret = 'radius_secret';
 var radiusfe = dgram.createSocket("udp4");
-const debug = require('debug')('telenet-udp-gw')
-const name = 'radius-front-end'
+
 radiusfe.on("message", function (msg, rinfo) {
-
-
+  debug(rinfo)
   try {
     var packet = radius.decode_without_secret({
         packet: msg

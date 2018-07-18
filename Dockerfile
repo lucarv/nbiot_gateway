@@ -11,4 +11,4 @@ RUN npm install
 # Bundle app source
 COPY . /usr/src/app
 
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT [ "npm", "run-script", "debug" ]

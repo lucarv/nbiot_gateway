@@ -1,6 +1,6 @@
 'use strict';
 'esversion:6';
-const debug = require('debug')('telenet-udp-gw')
+const debug = require('debug')('nbiot_cloud_gw')
 const name = 'api-server'
 // Load Koa
 var Koa = require('koa');

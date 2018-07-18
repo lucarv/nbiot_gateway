@@ -2,7 +2,7 @@
 require('dotenv').config();
 var connectionString = process.env.HUBCS;
 var _ = require('underscore')
-const debug = require('debug')('telenet-udp-gw');
+const debug = require('debug')('nbiot_cloud_gw');
 const name = 'hub-proxy';
 
 const azure_iot_common = require("azure-iot-common");

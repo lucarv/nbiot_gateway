@@ -5,7 +5,8 @@
   "main": "cluster.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node cluster"
+    "start": "node cluster",
+    "debug": "DEBUG=nbiot_cloud_gw node cluster"
   },
   "author": "",
   "license": "ISC",

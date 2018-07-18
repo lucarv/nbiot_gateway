@@ -1,5 +1,5 @@
 'esversion: 6';
-const debug = require('debug')('telenet-udp-gw')
+const debug = require('debug')('nbiot_cloud_gw')
 const name = 'redis-server'
 var redis = require("redis");
 var redis_client = redis.createClient(6379, 'udpgw-telenet.redis.cache.windows.net');

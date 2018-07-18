@@ -1,7 +1,7 @@
 'use strict';
 'esversion:6';
 require('dotenv').config();
-const debug = require('debug')('telenet-udp-gw');
+const debug = require('debug')('nbiot_cloud_gw');
 const name = 'udp-server';
 
 // raw udp datagrams
