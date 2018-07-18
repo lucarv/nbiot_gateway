@@ -4,7 +4,6 @@ var dgram = require("dgram");
 var radiusfe = dgram.createSocket("udp4");
 
 radiusfe.on("message", function (msg, rinfo) {
-  debug(rinfo)
   try {
     var packet = radius.decode_without_secret({
         packet: msg
@@ -14,7 +13,7 @@ radiusfe.on("message", function (msg, rinfo) {
     switch (packet.attributes["Acct-Status-Type"]) {
       case 'Start':
         type = 'pdp_ON';
-        debug('[cn aaa] ACC_START ----> [gw aaa]');
+        debug('[cn aaa] ACC_START ----> [gw aaa]: ' + rinfo.address);
         break;
       case 'Stop':
         type = 'pdp_OFF';
