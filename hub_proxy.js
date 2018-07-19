@@ -31,7 +31,7 @@ gateway.on('message', function (message) {
 	});
 });
 
-var start = async function () {
+const start = async function () {
 	try {
 		await gateway.open(connectionString);
 		debug(`hub_proxy [pid:${process.pid}] connected to IoT Hub`);
@@ -45,12 +45,12 @@ process.on('message', async function (msg) {
 		case 'conn_DEV':
 			// check if device has been provisioned, if not, silently drop it
 			devices.push(msg.device);
-			debug(`[master] CONN_DEV ----> [hub_proxy]: ${JSON.stringify(msg)}`);
+			debug(`[master] CONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
 			addDevicePromises.push(gateway.addDevice(msg.device.id));
 			await Promise.all(addDevicePromises);
 			break;
 		case 'disconn_DEV':
-			debug(`[master] disCONN_DEV ----> [hub_proxy]`);
+			debug(`[master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
 			break;
 		case 'd2c':
 			//send this UDP datagram to the ipAddress of the imsi

@@ -12,7 +12,6 @@ var koaBody = require('koa-body');
 
 var router = new Router();
 var counter = 0;
-// consfigure app, databases
 
 // api_server.listen(process.env.API_PORT);
 
@@ -43,7 +42,6 @@ router
     let result = {
       error: 'unkonw imsi'
     }
-
     redis_client.get(ctx.params.id, function (err, reply) {
       if (err)
         result = err
@@ -54,17 +52,21 @@ router
       ctx.body = result;
     });
   })
-  .post('/', koaBody(),
+  .post('/config', koaBody(),
     (ctx) => {
-
+      /*
       process.send({
         type: 'c2d',
         body: ctx.request.body
       });
-      let ip = getIP(ctx.request.body.imsi);
+      */
+      debug(settings);
+      debug(ctx.request.body.hostname);
+      /*
       ctx.body = {
         ip: ip
       };
+      */
     });
 
 

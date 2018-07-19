@@ -1,12 +1,1 @@
-{
-    "hostname": "telenet-nbiot-hub.azure-devices.net",
-    "connectionString": "HostName=telenet-nbiot-hub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=VDFqdtrf+L+SyTBi5VKl0Ph9L05Y6zGIpIP3buadCFw=",
-    "ipVersion": "udp4",
-    "ports": {
-        "api": 8080,
-        "radius": 1815,
-        "accounting": 49001,
-        "udp_raw_d2c": 41234,
-        "udp_raw_c2d": 41235
-    }
-}
+{"hostname":"HostName=telenet-nbiot-hub.azure-devices.net","connectionString":"HostName=telenet-nbiot-hub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=VDFqdtrf+L+SyTBi5VKl0Ph9L05Y6zGIpIP3buadCFw=","ipVersion":"udp4","ports":{"radius":"1815","udp_raw_d2c":"41234","udp_raw_c2d":"41235","coap":"5683"}}

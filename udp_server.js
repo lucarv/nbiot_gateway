@@ -36,11 +36,7 @@ process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'c2d':
 			debug(`[master] c2d ------> [udp server]:  send to ${msg.deviceIp}`);
-			/*
-			let device = dgram.createSocket(ipv);
-			device.bind({address: '0.0.0.0',port: settings.ports.udp_raw_c2d})
-			*/
-			device.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
+			c2d.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
 				if (err) debug('error when attempting to send c2d: ' + err);
 				//device.close();
 			});

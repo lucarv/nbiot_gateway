@@ -1,0 +1,43 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+
+.checkboxes label {
+  display: block;
+  float: left;
+  padding-right: 30px;
+  white-space: nowrap;
+}
+.checkboxes input {
+  vertical-align: middle;
+}
+.checkboxes label span {
+  vertical-align: middle;
+}
+
+.navbar-custom {
+    background-color:#17AEEB;
+    color:#ffffff;
+    border-radius:0;
+}
+
+.navbar-custom .navbar-nav > li > a {
+    color:#000;
+}
+.navbar-custom .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus {
+    color:black;
+    background-color:transparent;
+}
+.navbar-custom .navbar-brand {
+    color:#eee;
+}
+
+.btn-space {
+    width: 70px !important;    }
+
+.input-dev {
+    padding-right: 10px;
+    width: 400px !important;    
+}

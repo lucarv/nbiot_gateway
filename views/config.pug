@@ -1,0 +1,36 @@
+extends layout
+block content
+    .row
+        .col-xs-12
+            .panel.panel-default
+                .panel-heading NB-IoT GW Configuration
+                .panel-body    
+                    form(action='/config', method='post', id="dev")
+                        fieldset
+                            .form-group.row
+                                .col-sm-10
+                                    label Connection String
+                                    input.form-control(type='text' name='cs') 
+                                .col-sm-2
+                                    label IP Version
+                                    input.form-control(type='text' name='ipv') 
+                            .form-group.row
+                                .col-sm-3
+                                    label UDP PORT FOR D2C
+                                    input.form-control(type='text' name='d2c') 
+                                .col-sm-3
+                                    label UDP PORT FOR C2D
+                                    input.form-control(type='text' name='c2d')  
+                                .col-sm-3
+                                    label UDP PORT FOR RADIUS
+                                    input.form-control(type='text' name='radius') 
+                                .col-sm-3
+                                    label UDP PORT FOR CoAP
+                                    input.form-control(type='text' name='coap') 
+                            .form-group.row
+                                .col-sm-2
+                                    button.btn.btn-default(type='submit' form='dev') change »                                       
+    .row
+        .col-xs-12  
+            .panel.panel-default
+                .panel-heading © For educational purposes only

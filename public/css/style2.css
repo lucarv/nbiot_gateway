@@ -1,0 +1,93 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:100,300,400);
+
+/*** The essential CSS needed for the layout ***/
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.Frame {
+  display: table;
+  width: 100%;
+}
+html>/**/body .Frame {
+  height: 100%;
+}
+
+.Row {
+  display: table-row;
+}
+html>/**/body .Row {
+  height: 1px;
+}
+/* Contain floats and fix margin collapse issues in IE6/7 */
+.Row {
+  *zoom: 1;
+}
+
+html>body .Row.Expand {
+  height: auto;
+}
+
+/*** Some other CSS for the look ***/
+
+body {
+  background: #fbc034;
+}
+
+.Frame {
+  height: 250px !important;
+  }
+
+#Content {
+  background: #fff;
+}
+
+#Footer {
+  background: #e7e7e7;
+}
+
+p, h1, h2, h3 {
+  margin: 10pt;
+}
+
+
+/*************************************************/
+
+.panel-table-container { 
+  padding : 10px;  
+}  
+.panel-table td { 
+   border-top : 1px solid #e7e7e7;
+}
+  
+.panel-table { 
+  border : 1px solid #E7e7e7;
+  height : 300px;
+  width : 100%;
+}
+
+.panel-table .footer td {
+	height: 40px;
+  	color : white;
+	background-color : #444;
+}
+
+.panel-table th { 
+	background-color : #B14B2F;
+    color : white;
+    font-weight : 100;
+    font-size : 30px;
+}
+
+.panel-table th>div{ 
+  max-height : 100px;
+  overflow : hidden;
+  padding : 10px;
+}
+.panel-table .body>td>div{ 
+  max-height : 150px;
+  overflow : hidden;
+  padding : 10px;
+}
