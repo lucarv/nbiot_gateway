@@ -15,14 +15,14 @@ radiusfe.on("message", function (msg, rinfo) {
     switch (packet.attributes["Acct-Status-Type"]) {
       case 'Start':
         type = 'pdp_ON';
-        debug('[cn aaa] ACC_START ----> [gw aaa]: ' + rinfo.address);
+        debug(name+': [cn aaa] ACC_START ----> [gw aaa]: ' + rinfo.address);
         break;
       case 'Stop':
         type = 'pdp_OFF';
-        debug('[cn aaa] PDP_OFF----> [gw aaa]');
+        debug(name+': [cn aaa] PDP_OFF----> [gw aaa]');
         break;
       default:
-        debug('not a valid accounting operation, ignoring');
+        debug(name+': not a valid accounting operation, ignoring');
         break;
     }
 
@@ -34,10 +34,10 @@ radiusfe.on("message", function (msg, rinfo) {
       }
     });
   } catch (e) {
-    debug("Failed to decode radius packet, silently dropping:", e);
+    debug(name+': Failed to decode radius packet, silently dropping', e);
     return;
   }
 });
 
-debug(`radius client spawned: ${process.pid}`);
+debug(`${name}: spawned: ${process.pid}`);
 module.exports = radiusfe;

@@ -15,16 +15,16 @@ const c2d = dgram.createSocket(ipv);
 
 d2c.on('listening', () => {
 	const address = d2c.address();
-	debug(`udp_front_end [pid:${process.pid}] listening on port: ${address.port}`);
+	debug(`${name}:  [pid:${process.pid}] listening on port: ${address.port}`);
 });
 
 d2c.on('error', (err) => {
-	debug(`server error:\n${err.stack}`);
+	debug(`${name}: server error:\n${err.stack}`);
 	d2c.close();
 });
 
 d2c.on('message', (buffer, rinfo) => {
-	debug(`[device] d2c ------> [udp server] from ${rinfo.address}`);
+	debug(`${name}: [device] d2c ------> [udp server] from ${rinfo.address}`);
 	process.send({
 		type: 'd2c',
 		deviceIp: rinfo.address,
@@ -35,9 +35,9 @@ d2c.on('message', (buffer, rinfo) => {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'c2d':
-			debug(`[master] c2d ------> [udp server]:  send to ${msg.deviceIp}`);
+			debug(`${name}: [master] c2d ------> [udp server]:  send to ${msg.deviceIp}`);
 			c2d.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
-				if (err) debug('error when attempting to send c2d: ' + err);
+				if (err) debug(name+': error when attempting to send c2d: ' + err);
 				//device.close();
 			});
 			break;

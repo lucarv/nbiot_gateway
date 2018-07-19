@@ -8,28 +8,37 @@ block content
                     form(action='/config', method='post', id="dev")
                         fieldset
                             .form-group.row
-                                .col-sm-10
-                                    label Connection String
-                                    input.form-control(type='text' name='cs') 
-                                .col-sm-2
-                                    label IP Version
-                                    input.form-control(type='text' name='ipv') 
+                                .col-sm-12
+                                    label IoT Hub Connection String
+                                    input.form-control(type='text' name='cs' required) 
                             .form-group.row
-                                .col-sm-3
-                                    label UDP PORT FOR D2C
-                                    input.form-control(type='text' name='d2c') 
-                                .col-sm-3
-                                    label UDP PORT FOR C2D
-                                    input.form-control(type='text' name='c2d')  
-                                .col-sm-3
-                                    label UDP PORT FOR RADIUS
-                                    input.form-control(type='text' name='radius') 
-                                .col-sm-3
-                                    label UDP PORT FOR CoAP
-                                    input.form-control(type='text' name='coap') 
+                                .col-sm-6
+                                    label Redis Key 
+                                    input.form-control(type='text' name='rkey' required) 
+                                .col-sm-6
+                                    label Redis Server
+                                    input.form-control(type='text' name='rurl' required) 
                             .form-group.row
                                 .col-sm-2
-                                    button.btn.btn-default(type='submit' form='dev') change »                                       
+                                    label Port for D2C
+                                    input.form-control(type='text' name='d2c' required) 
+                                .col-sm-2
+                                    label Port for C2D
+                                    input.form-control(type='text' name='c2d' required)  
+                                .col-sm-2
+                                    label Port for Radius
+                                    input.form-control(type='text' name='radius' required) 
+                                .col-sm-2
+                                    label Port for CoAP
+                                    input.form-control(type='text' name='coap' required) 
+                                .col-sm-4
+                                    label Socket Version
+                                    select.selectpicker.form-control(name='ipv' required)
+                                        option(value='udp4') UDP4
+                                        option(value='udp6') UDP6                                    
+                            .form-group.row
+                                .col-sm-2
+                                    button.btn.btn-primary(type='submit' form='dev') SAVE »                                       
     .row
         .col-xs-12  
             .panel.panel-default

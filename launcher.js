@@ -1,7 +1,7 @@
 'use strict';
 'esversion:6';
 const settings = require('./config.json');
-//const api_server = require('./api_server');
+const az_redis = require('./az_redis');
 const hubProxy = require('./hub_proxy');
 const d2c = require('./udp_server').d2c;
 const c2d = require('./udp_server').c2d;

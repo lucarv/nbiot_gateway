@@ -19,6 +19,10 @@ router.post('/config', function (req, res, next) {
     "hostname": hostname,
     "connectionString": req.body.cs,
     "ipVersion": req.body.ipv,
+    "redis": {
+      key: req.body.rkey,
+      url: req.body.rurl
+    },
     "ports": {
       "radius": req.body.radius,
       "udp_raw_d2c": req.body.d2c,

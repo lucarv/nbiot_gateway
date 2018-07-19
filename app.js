@@ -22,7 +22,7 @@ var start = function () {
 			worker.on('message', (msg) => {
 				switch (msg.type) {
 					case 'pdp_ON':
-						debug(`[gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
+						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
 						devices.push(msg.device);
 
 						worker.send({
@@ -35,17 +35,24 @@ var start = function () {
 						});
 						break;
 					case 'pdp_OFF':
-						debug(`[gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
+						debug(`${name}: [gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
 						worker.send({
 							type: 'disconn_DEV',
 							device: msg.device
 						});
 						break;
 					case 'd2c':
-						debug(`[udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
-						var found = devices.find(o => o.ip === msg.deviceIp);
+						debug(`${name}: [udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
+						worker.send({
+							type: 'get_ID',
+							deviceIp: msg.deviceIp
+						});
+						break;
+					case 'got_ID':
+						debug(`${name}: [az redis] gotID ------> [master]: from (${(msg.deviceId)})`);
+						var found = devices.find(o => o.id === msg.deviceId);
 						if (!found)
-							debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
+							debug(`device at ${msg.deviceId} not currently registered, ignore the message`)
 						else
 							worker.send({
 								type: 'd2c',
@@ -54,7 +61,7 @@ var start = function () {
 							});
 						break;
 					case 'c2d':
-						debug(`[udp server] c2d ------> [master]: to (${msg.deviceId})`);
+						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
 						var found = devices.find(o => o.id === msg.deviceId);
 						msg.deviceIp = found.ip;
 						worker.send(msg);
@@ -75,7 +82,7 @@ var start = function () {
 }
 
 if (!configFile.hasOwnProperty('hostname')) {
-	console.log('not configured. open <gw_rl>:8080/config on a browser ');
+	console.log('not configured. open <YOUR GATEWAY IP ADDRESS:8080/config on a browser ');
 	var conf = require('./web_server');
 } else start();
 
