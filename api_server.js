@@ -2,6 +2,8 @@
 'esversion:6';
 const debug = require('debug')('nbiot_cloud_gw')
 const name = 'api-server'
+const settings = require('./config.json');
+
 // Load Koa
 var Koa = require('koa');
 var api_server = new Koa();
@@ -14,8 +16,8 @@ var counter = 0;
 
 // api_server.listen(process.env.API_PORT);
 
-const koa_server = api_server.listen(process.env.API_PORT, () => {
-  debug(`api_server [pid:${process.pid}] listening on port: ${process.env.API_PORT}`);
+const koa_server = api_server.listen(settings.ports.api, () => {
+  debug(`api_server [pid:${process.pid}] listening on port: ${settings.ports.api}`);
 });
 api_server
   .use(router.routes())

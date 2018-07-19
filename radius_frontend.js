@@ -1,7 +1,9 @@
 const debug = require('debug')('nbiot_cloud_gw')
 var radius = require('./lib/radius');
+const settings = require('./config.json');
 var dgram = require("dgram");
-var radiusfe = dgram.createSocket("udp4");
+const ipv = settings.ipVersion;
+var radiusfe = dgram.createSocket(ipv);
 
 radiusfe.on("message", function (msg, rinfo) {
   try {
