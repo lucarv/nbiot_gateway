@@ -30,14 +30,14 @@ var start = function () {
 							device: msg.device
 						});
 						worker.send({
-							type: 'store_IP',
+							type: 'store_device',
 							device: msg.device
 						});
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
 						worker.send({
-							type: 'disconn_DEV',
+							type: 'dddelete_device',
 							device: msg.device
 						});
 						break;
@@ -49,22 +49,32 @@ var start = function () {
 						});
 						break;
 					case 'got_ID':
-						debug(`${name}: [az redis] gotID ------> [master]: from (${(msg.deviceId)})`);
+						debug(`${name}: [az redis] gotID ------> [master]: (${(msg.deviceId)})`);
 						var found = devices.find(o => o.id === msg.deviceId);
 						if (!found)
 							debug(`device at ${msg.deviceId} not currently registered, ignore the message`)
 						else
 							worker.send({
 								type: 'd2c',
-								deviceId: found.id,
-								payload: msg.payload
+								deviceId: found.id
 							});
 						break;
 					case 'c2d':
 						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
-						var found = devices.find(o => o.id === msg.deviceId);
-						msg.deviceIp = found.ip;
+						debug(msg.payload)
+						msg.type = 'get_IP';
 						worker.send(msg);
+						break;
+					case 'got_IP':
+						debug(`${name}: [az redis] gotIP ------> [master]: (${(msg.deviceIp)})`);
+						var found = devices.find(o => o.ip === msg.deviceIp);
+						if (!found)
+							debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
+						else {
+							msg.type = 'c2d'
+							msg.deviceIp = found.ip;
+							worker.send(msg);
+						}
 						break;
 					default:
 						break;

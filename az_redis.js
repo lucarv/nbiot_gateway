@@ -21,12 +21,14 @@ redis_client.on('connect', function () {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'store_IP':
+		case 'store_device':
 			debug(name + ': [master] STORE_IP ---> [az_redis]: ' + JSON.stringify(msg));
 			redis_client.set(
 				msg.device.ip,
+				msg.device.id);
+			redis_client.set(
 				msg.device.id,
-				redis.print);
+				msg.device.ip);
 			break;
 		case 'get_ID':
 			debug(name + ': [[master] GET_ID ---> [az_redis]: ' + msg.deviceIp);
@@ -37,8 +39,19 @@ process.on('message', (msg) => {
 				});
 			});
 			break;
-		case 'del_IP':
+		case 'get_IP':
+			debug(name + ': [[master] GET_IP ---> [az_redis]: ' + msg.deviceId);
+			redis_client.get(msg.deviceId, function (err, reply) {
+				process.send({
+					type: 'got_IP',
+					deviceIp: reply,
+					payload: msg.payload
+				});
+			});
+			break;
+		case 'del_device':
 			redis_client.del(msg.device.id);
+			redis_client.del(msg.device.ip);
 			break;
 		default:
 			break;
