@@ -1,4 +1,6 @@
 const debug = require('debug')('nbiot_cloud_gw')
+const name = 'radius-fe';
+
 var radius = require('./lib/radius');
 const settings = require('./config.json');
 var dgram = require("dgram");
