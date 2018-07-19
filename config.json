@@ -6,8 +6,7 @@
         "api": 8080,
         "radius": 1815,
         "accounting": 49001,
-        "udp_raw_out": 41234,
-        "udp_raw_in": 41235
-    },
-    "gateway_url": "0.0.0.0"
+        "udp_raw_d2c": 41234,
+        "udp_raw_c2d": 41235
+    }
 }

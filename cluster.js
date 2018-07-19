@@ -17,7 +17,7 @@ if (cluster.isMaster) {
 		worker.on('message', (msg) => {
 			switch (msg.type) {
 				case 'pdp_ON':
-					debug(`[gw aaa] PDP_ON -------> [master]: ${msg}`);
+					debug(`[gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
 					devices.push(msg.device);
 					worker.send({
 						type: 'conn_DEV',
@@ -29,25 +29,29 @@ if (cluster.isMaster) {
 					});
 					break;
 				case 'pdp_OFF':
-					debug('[gw aaa] PDP_OFF ------> [naster]');
+					debug(`[gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
 					worker.send({
 						type: 'disconn_DEV',
 						device: msg.device
 					});
 					break;
 				case 'd2c':
-					debug(`[udp gw] d2c ------> [master]: ${JSON.stringify(msg)}`);
-					worker.send({
-						type: 'd2c',
-						ip: msg.ip,
-						payload: msg.payload
-					});
+					debug(`[udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
+					var found = devices.find(o => o.ip === msg.deviceIp);
+					if (!found)
+						debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
+					else
+						worker.send({
+							type: 'd2c',
+							deviceId: found.id,
+							payload: msg.payload
+						});
 					break;
 				case 'c2d':
-					debug(`[udp gw] c2d ------> [master]: from(${msg.deviceId})`);
+					debug(`[udp server] c2d ------> [master]: to (${msg.deviceId})`);
 					var found = devices.find(o => o.id === msg.deviceId);
 					msg.deviceIp = found.ip;
-					worker.send(msg); // just forward to the UDPGW worker
+					worker.send(msg);
 					break;
 				default:
 					break;

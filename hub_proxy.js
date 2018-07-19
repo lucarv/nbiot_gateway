@@ -45,7 +45,7 @@ process.on('message', async function (msg) {
 		case 'conn_DEV':
 			// check if device has been provisioned, if not, silently drop it
 			devices.push(msg.device);
-			debug(`[master] CONN_DEV ----> [hub_proxy]: ${msg.device}`);
+			debug(`[master] CONN_DEV ----> [hub_proxy]: ${JSON.stringify(msg)}`);
 			addDevicePromises.push(gateway.addDevice(msg.device.id));
 			await Promise.all(addDevicePromises);
 			break;
@@ -54,20 +54,18 @@ process.on('message', async function (msg) {
 			break;
 		case 'd2c':
 			//send this UDP datagram to the ipAddress of the imsi
-			debug(`[master] d2c ----> [hub_proxy]`);
+			debug(`[master] d2c ----> [hub_proxy]: from (${msg.deviceId})`);
 			var message = new Message(msg.payload);
-			for (var i = 0; i < devices.length; i++) {
-				if (msg.ip === devices[i].ip) {
-					try {
-						await gateway.sendMessage(devices[i].id, message);
-					} catch (error) {
-						debug('Could not send message to IoT Hub: ' + error);
-					}
-				}
+
+			try {
+				await gateway.sendMessage(msg.deviceId, message);
+			} catch (error) {
+				debug('Could not send message to IoT Hub: ' + error);
 			}
 			break;
 		default:
 			break;
 	}
 });
+
 start();

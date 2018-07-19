@@ -7,25 +7,27 @@ const name = 'udp-server';
 // raw udp datagrams
 const dgram = require('dgram');
 const ipv = settings.ipVersion;
-const gw = dgram.createSocket(ipv);
+const d2c = dgram.createSocket(ipv);
+const c2d = dgram.createSocket(ipv);
+
 
 //var msgCounter = 0;
 
-gw.on('listening', () => {
-	const address = gw.address();
+d2c.on('listening', () => {
+	const address = d2c.address();
 	debug(`udp_front_end [pid:${process.pid}] listening on port: ${address.port}`);
 });
 
-gw.on('error', (err) => {
+d2c.on('error', (err) => {
 	debug(`server error:\n${err.stack}`);
-	gw.close();
+	d2c.close();
 });
 
-gw.on('message', (buffer, rinfo) => {
-	debug(`[device] d2c ------> [udp_server] from ${rinfo.address}`);
+d2c.on('message', (buffer, rinfo) => {
+	debug(`[device] d2c ------> [udp server] from ${rinfo.address}`);
 	process.send({
 		type: 'd2c',
-		ip: rinfo.address,
+		deviceIp: rinfo.address,
 		payload: buffer.toString()
 	});
 });
@@ -33,15 +35,14 @@ gw.on('message', (buffer, rinfo) => {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'c2d':
-			debug(`[master] c2d ------> [udp_server]:  send to ${msg.deviceIp}`);
+			debug(`[master] c2d ------> [udp server]:  send to ${msg.deviceIp}`);
+			/*
 			let device = dgram.createSocket(ipv);
-			device.bind({
-				address: '0.0.0.0',
-				port: 51000
-			})
-			device.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_in, msg.deviceIp, function (err, bytes) {
+			device.bind({address: '0.0.0.0',port: settings.ports.udp_raw_c2d})
+			*/
+			device.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
 				if (err) debug('error when attempting to send c2d: ' + err);
-				device.close();
+				//device.close();
 			});
 			break;
 		default:
@@ -49,4 +50,6 @@ process.on('message', (msg) => {
 	}
 });
 
-module.exports = gw;
+module.exports.d2c = d2c;
+module.exports.c2d = c2d;
+
