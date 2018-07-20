@@ -2,7 +2,7 @@ const debug = require('debug')('nbiot_cloud_gw')
 const name = 'radius-fe';
 
 var radius = require('./lib/radius');
-const settings = require('./config.json');
+const settings = require('./data/config.json');
 var dgram = require("dgram");
 const ipv = settings.ipVersion;
 var radiusfe = dgram.createSocket(ipv);

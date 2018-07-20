@@ -1,5 +1,5 @@
 "use strict";
-const settings = require('./config.json');
+const settings = require('./data/config.json');
 const name = 'hub-proxy';
 
 var connectionString = settings.connectionString;

@@ -3,7 +3,8 @@
 const debug = require('debug')('nbiot_cloud_gw');
 const name = 'cluster-master';
 const cluster = require('cluster');
-const configFile = require('./config.json');
+const testFolder = './data/';
+const settings = require('./data/config.json');
 
 var worker;
 var devices = [];
@@ -13,6 +14,9 @@ var start = function () {
 	if (cluster.isMaster) {
 		// Count the machine's CPUs
 		var cpuCount = require('os').cpus().length;
+		require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+			debug(name+' running on: '+add+ ' not useful if running in a container');
+		  })
 
 		// Create a worker for each CPU
 		for (var i = 0; i < cpuCount; i += 1) {
@@ -61,7 +65,6 @@ var start = function () {
 						break;
 					case 'c2d':
 						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
-						debug(msg.payload)
 						msg.type = 'get_IP';
 						worker.send(msg);
 						break;
@@ -71,7 +74,8 @@ var start = function () {
 						if (!found)
 							debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
 						else {
-							msg.type = 'c2d'
+							debug(msg)
+							msg.type = 'c2d';
 							msg.deviceIp = found.ip;
 							worker.send(msg);
 						}
@@ -91,9 +95,8 @@ var start = function () {
 	}
 }
 
-if (!configFile.hasOwnProperty('hostname')) {
-	console.log('not configured. open <YOUR GATEWAY IP ADDRESS:8080/config on a browser ');
-	var conf = require('./web_server');
+if (!settings.hasOwnProperty('hostname')) {
+	console.log('not configured. type npm run-script config on the console' );
 } else start();
 
 module.exports.start = start;

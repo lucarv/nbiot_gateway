@@ -1,7 +1,7 @@
 'use strict';
 'esversion:6';
 const debug = require('debug')('nbiot_cloud_gw');
-const settings = require('./config.json');
+const settings = require('./data/config.json');
 const name = 'udp-server';
 
 // raw udp datagrams
@@ -35,10 +35,10 @@ d2c.on('message', (buffer, rinfo) => {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'c2d':
-			debug(`${name}: [master] c2d ------> [udp server]:  send to ${msg.deviceIp}`);
+			debug(`${name}: [master] c2d ------> [udp server]:  send ${msg.payload} to ${msg.deviceIp}`);
 			c2d.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
 				if (err) debug(name+': error when attempting to send c2d: ' + err);
-				//device.close();
+				else debug(`sent ${bytes} to device`);
 			});
 			break;
 		default:

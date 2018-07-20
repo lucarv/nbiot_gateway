@@ -2,7 +2,7 @@
 const debug = require('debug')('nbiot_cloud_gw')
 const name = 'redis-server'
 var redis = require("redis");
-const settings = require('./config.json');
+const settings = require('./data/config.json');
 
 var redis_client = redis.createClient(6380, settings.redis.url, {
 	auth_pass: settings.redis.key,
@@ -22,7 +22,7 @@ redis_client.on('connect', function () {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'store_device':
-			debug(name + ': [master] STORE_IP ---> [az_redis]: ' + JSON.stringify(msg));
+			debug(name + ': [master] STORE_IP ---> [az_redis]: ' + JSON.stringify(msg.device));
 			redis_client.set(
 				msg.device.ip,
 				msg.device.id);

@@ -2,9 +2,13 @@
 const express = require('express');
 const router = express.Router();
 const jf = require('jsonfile');
-
+const redis = require("redis");
 
 //routing
+router.get('/', function (req, res, next) {
+  res.send('nothing here');
+});
+
 router.get('/config', function (req, res, next) {
   res.render('config', {
     title: 'Config Page',
@@ -30,9 +34,10 @@ router.post('/config', function (req, res, next) {
       "coap": req.body.coap
     }
   }
-  jf.writeFileSync('config.json', config);
-  require('../app').start();
+
+  jf.writeFileSync('./data/config.json', config);
   res.json(config);
+  process.exit();
 });
 
 module.exports = router;

@@ -1,15 +1,12 @@
 //require('dotenv').config()
-var express = require('express');
-
-var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-
-var index = require('./routes/index');
-
-var app = express();
-
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const index = require('./routes/index');
+const app = express();
+const name = 'conf_server'
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -43,4 +40,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 app.listen(8080);
+
+  console.log(`${name} [with pid:${process.pid}] listening on port: ${8080}`);
+
 module.exports = app;
