@@ -44,7 +44,7 @@ ATTRIBUTE	Login-LAT-Group				36	octets
 ATTRIBUTE	Framed-AppleTalk-Link			37	integer
 ATTRIBUTE	Framed-AppleTalk-Network		38	integer
 ATTRIBUTE	Framed-AppleTalk-Zone			39	string
-ATTRIBUTE   3GPP-IMEISV                 17  string
+ATTRIBUTE   3GPP-IMSI                 17  string
 
 
 ATTRIBUTE	CHAP-Challenge				60	octets

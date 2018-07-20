@@ -31,7 +31,7 @@ radiusfe.on("message", function (msg, rinfo) {
     process.send({
       type: type,
       device: {
-        id: packet.attributes["3GPP-IMEISV"],
+        id: packet.attributes["3GPP-IMSI"],
         ip: packet.attributes["Framed-IP-Address"]
       }
     });
