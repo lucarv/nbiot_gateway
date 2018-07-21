@@ -27,18 +27,16 @@ api_server
 // Load Routes
 router
   .get('/', (ctx, next) => {
-    console.log('GET /')
     ctx.body = {
       text: "a simple counter to display how many times this api was called",
       counter: counter
     };
     counter++;
   })
-  .get('/imsis', (ctx, next) => {
-    //console.log('dict: ' + JSON.stringify(dict))
+  .get('/devices', (ctx, next) => {
     ctx.body = 'now the imsis are in redis, think about this';
   })
-  .get('/ip/:id', (ctx, next) => { //fix this - not working since redis
+  .get('/ip/:id', (ctx, next) => {
     let result = {
       error: 'unkonw imsi'
     }
@@ -51,6 +49,21 @@ router
         }
       ctx.body = result;
     });
+  })
+  .get('/tag', (ctx, next) => {
+    ctx.body = {
+      text: "reading requested"
+        };
+  })
+  .get('/observe', (ctx, next) => {
+    debug(`[coap app] observe ------> [${name}]: observe ${ctx.request.query.deviceId}`);
+    process.send({
+      type: 'coap_observe',
+      deviceId: ctx.request.query.deviceId
+    })
+    ctx.body = {
+      text: "observe requested"
+        };
   })
   .post('/config', koaBody(),
     (ctx) => {

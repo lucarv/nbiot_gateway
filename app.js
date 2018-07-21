@@ -1,7 +1,7 @@
 'use strict';
 'esversion:6';
 const debug = require('debug')('nbiot_cloud_gw');
-const name = 'cluster-master';
+const name = 'master';
 const cluster = require('cluster');
 const testFolder = './data/';
 const settings = require('./data/config.json');
@@ -15,8 +15,8 @@ var start = function () {
 		// Count the machine's CPUs
 		var cpuCount = require('os').cpus().length;
 		require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-			debug(name+' running on: '+add+ ' not useful if running in a container');
-		  })
+			debug(name + ' running on: ' + add + ' not useful if running in a container');
+		})
 
 		// Create a worker for each CPU
 		for (var i = 0; i < cpuCount; i += 1) {
@@ -28,7 +28,6 @@ var start = function () {
 					case 'pdp_ON':
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
 						devices.push(msg.device);
-
 						worker.send({
 							type: 'conn_DEV',
 							device: msg.device
@@ -37,6 +36,10 @@ var start = function () {
 							type: 'store_device',
 							device: msg.device
 						});
+						worker.send({
+							type: 'observe',
+							device: msg.device
+						});						
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
@@ -80,6 +83,13 @@ var start = function () {
 							worker.send(msg);
 						}
 						break;
+						case 'coap_observe':
+						debug(`[api_server] coap_observe ------> [${name}]: (${msg.deviceId})`);
+						worker.send({
+							type: 'observe',
+							deviceId: msg.deviceId
+						});
+						break;
 					default:
 						break;
 				}
@@ -96,7 +106,7 @@ var start = function () {
 }
 
 if (!settings.hasOwnProperty('hostname')) {
-	console.log('not configured. type npm run-script config on the console' );
+	console.log('not configured. type npm run-script config on the console');
 } else start();
 
 module.exports.start = start;
