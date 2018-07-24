@@ -20,9 +20,7 @@ var start = function () {
 
 		// Create a worker for each CPU
 		for (var i = 0; i < cpuCount; i += 1) {
-
 			worker = cluster.fork();
-
 			worker.on('message', (msg) => {
 				switch (msg.type) {
 					case 'pdp_ON':
@@ -44,7 +42,7 @@ var start = function () {
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
 						worker.send({
-							type: 'dddelete_device',
+							type: 'delete_device',
 							device: msg.device
 						});
 						break;

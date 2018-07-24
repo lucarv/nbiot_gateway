@@ -49,7 +49,7 @@ process.on('message', (msg) => {
 				});
 			});
 			break;
-		case 'del_device':
+		case 'delete_device':
 			redis_client.del(msg.device.id);
 			redis_client.del(msg.device.ip);
 			break;

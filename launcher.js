@@ -15,6 +15,5 @@ c2d.bind({
     port: settings.ports.udp_raw_c2d
 });
 const coap_server = require('./coap_server').c2d;
-
 const radiusfe = require('./radius_frontend');
 radiusfe.bind(settings.ports.radius);
