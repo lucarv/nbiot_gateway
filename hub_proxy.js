@@ -45,10 +45,18 @@ process.on('message', async function (msg) {
 			devices.push(msg.device);
 			debug(`${name}: [master] CONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
 			addDevicePromises.push(gateway.addDevice(msg.device.id));
+			debug(addDevicePromises.length);
 			await Promise.all(addDevicePromises);
 			break;
 		case 'disconn_DEV':
 			debug(`${name}: [master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
+			let detached = gateway.delDevice(msg.device.id);
+			let index = addDevicePromises.indexOf(detached);
+			if (index > -1) {
+				addDevicePromises.splice(index, 1);
+			}
+			debug(addDevicePromises.length);
+			await Promise.all(addDevicePromises);
 			break;
 		case 'd2c':
 			//send this UDP datagram to the ipAddress of the imsi

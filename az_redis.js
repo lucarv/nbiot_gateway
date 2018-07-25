@@ -22,7 +22,7 @@ redis_client.on('connect', function () {
 process.on('message', (msg) => {
 	switch (msg.type) {
 		case 'store_device':
-			debug(name + ': [master] STORE_IP ---> [az_redis]: ' + JSON.stringify(msg.device));
+			debug(name + ': [master] STORE DEV ---> [az_redis]: ' + JSON.stringify(msg.device));
 			redis_client.set(
 				msg.device.ip,
 				msg.device.id);
@@ -50,7 +50,8 @@ process.on('message', (msg) => {
 			});
 			break;
 		case 'delete_device':
-			redis_client.del(msg.device.id);
+		debug(name + ': [master] REMOVE DEV ---> [az_redis]: ' + JSON.stringify(msg.device));
+		redis_client.del(msg.device.id);
 			redis_client.del(msg.device.ip);
 			break;
 		default:

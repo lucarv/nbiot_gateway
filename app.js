@@ -45,7 +45,10 @@ var start = function () {
 							type: 'delete_device',
 							device: msg.device
 						});
-						break;
+						worker.send({
+							type: 'disconn_DEV',
+							device: msg.device
+						});						break;
 					case 'd2c':
 						debug(`${name}: [udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
 						worker.send({
