@@ -34,13 +34,10 @@ var start = function () {
 							type: 'store_device',
 							device: msg.device
 						});
-						worker.send({
-							type: 'observe',
-							device: msg.device
-						});						
+
 						break;
 					case 'pdp_OFF':
-						debug(`${name}: [gw aaa] PDP_OFF ------> [naster]: ${msg.device.id}`);
+						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
 						worker.send({
 							type: 'delete_device',
 							device: msg.device
@@ -48,7 +45,15 @@ var start = function () {
 						worker.send({
 							type: 'disconn_DEV',
 							device: msg.device
-						});						break;
+						});
+						break;
+					case 'observe':
+					debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
+						worker.send({
+							type: 'observe',
+							device: msg.device
+						});
+						break;
 					case 'd2c':
 						debug(`${name}: [udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
 						worker.send({
@@ -84,7 +89,7 @@ var start = function () {
 							worker.send(msg);
 						}
 						break;
-						case 'coap_observe':
+					case 'coap_observe':
 						debug(`[api_server] coap_observe ------> [${name}]: (${msg.deviceId})`);
 						worker.send({
 							type: 'observe',

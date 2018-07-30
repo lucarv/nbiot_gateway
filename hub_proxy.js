@@ -42,11 +42,23 @@ process.on('message', async function (msg) {
 	switch (msg.type) {
 		case 'conn_DEV':
 			// check if device has been provisioned, if not, silently drop it
+			registry.getTwin(msg.device.id, (err, twin) => {
+				if (err) debug(` device not provisioned, ignore `);
+				else {
+					let t = twin.tags.deviceType
+					if (t === 'coap')
+					process.send({
+						type: 'observe',
+						device: msg.device
+					});
+				}
+			});
 			devices.push(msg.device);
 			debug(`${name}: [master] CONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
-			addDevicePromises.push(gateway.addDevice(msg.device.id));
-			debug(addDevicePromises.length);
+			let p = gateway.addDevice(msg.device.id);
+			addDevicePromises.push(p);
 			await Promise.all(addDevicePromises);
+
 			break;
 		case 'disconn_DEV':
 			debug(`${name}: [master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
@@ -55,7 +67,6 @@ process.on('message', async function (msg) {
 			if (index > -1) {
 				addDevicePromises.splice(index, 1);
 			}
-			debug(addDevicePromises.length);
 			await Promise.all(addDevicePromises);
 			break;
 		case 'd2c':

@@ -9,12 +9,12 @@ NBIOT -> Azure IoT HuB cloud-gw
 ***
 
 **Architecture**  
-![](static/arch.png?raw=true)
+![](static/arch1.png?raw=true)
 This App provides an interface for NB-IoT devices to interact with Azure IoT Hub, while it still not supporting UDP and able to terminate VPNs.
 The device communication can be done on IPv4 or IPv6, all the other communication will be over IPv4.  
 
 ## Gateway considerations
-![](static/internals.png?raw=true)
+![](static/internal.png?raw=true)
 
 The gateway is a cluster with as many worker nodes as there are CPUs in the host machine.  It can be executed stand-alone just typing _npm start_ or _npm run-script debug_ at the command prompt.  
 
@@ -49,15 +49,20 @@ The GW uses The following ports:
 * UDP port 41235 for C2D messages
 * UDP port 5683 for CoAP
 * TCP port 8080 for API calls  
-* 
-**Use Case 1:**  
-An udp device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
-The message can be anything you want and in the device simulator included in this repo you can type whatever you like at the command prompt.  
-![](static/telemetry.png?raw=true)
   
-**Use Case 2:**  
+**Use Case 1:**  
+An UDP device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
+The message can be anything you want and in the device simulator included in this repo you can type whatever you like at the command prompt.  
+![](static/tele.png?raw=true)
+  
+  **Use Case 2:**  
+An CoAP device attaches to the network and has its messages forwarded to all applications that are observing CoAP devices.  
+Note that this example will let applications observe all CoAP devices that can be observed using the app connection string. To make sure that an app only receive messages from devices it observes, an intermediary filtering needs to be created.  
+![](static/coap.png?raw=true)
+  
+**Use Case 3:**  
 An application requests to send a message to a device as a raw datagram via the GW.    
-![](static/c2d.png?raw=true)
+![](static/c2d1.png?raw=true)
 
 ## How to run it locally
 1. Provision your devices on your IoT Hub.
@@ -66,10 +71,5 @@ An application requests to send a message to a device as a raw datagram via the 
 4. Get an [NBIOT device simulator](https://github.com/lucarv/nbiot_dev_sim).  
   
 
-
-
 **NOTE**  
-Both the GW and the IoT Hub are payload agnostic, and it is up to the application layer to parse the raw message.
-
-**urgents todo:** 
-* CoAP Support
+Both the GW and the IoT Hub are payload agnostic, and it is up to the application layer to parse the messages.
