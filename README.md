@@ -82,6 +82,7 @@ An application requests the last reported tag from a device using a REST API.
 Both the GW and the IoT Hub are payload agnostic, and it is up to the application layer to parse the messages.
 
 **TO DO**
+* Extensive error handling
 * DTLS Support
 * Resource discovery
 * Proxy caching
