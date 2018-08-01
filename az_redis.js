@@ -30,6 +30,7 @@ process.on('message', (msg) => {
 			redis_client.set(
 				msg.deviceId,
 				val);
+				console.log(payload)
 			break;
 		default:
 			break;
