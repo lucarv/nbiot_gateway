@@ -4,82 +4,36 @@ const debug = require('debug')('nbiot_cloud_gw')
 const name = 'api-server'
 const settings = require('./data/config.json');
 
-// Load Koa
-var Koa = require('koa');
-var api_server = new Koa();
-var Router = require('koa-router');
-var koaBody = require('koa-body');
+var express = require('express')
+var app = express()
 
-var router = new Router();
-var counter = 0;
-
-// api_server.listen(process.env.API_PORT);
-
-const koa_server = api_server.listen(3000, () => {
-  debug(`api_server [pid:${process.pid}] listening on port: ${3000}`);
-});
-api_server
-  .use(router.routes())
-  .use(koaBody())
-  .use(router.allowedMethods());
-
-
-// Load Routes
-router
-  .get('/', (ctx, next) => {
-    ctx.body = {
-      text: "a simple counter to display how many times this api was called",
-      counter: counter
-    };
-    counter++;
-  })
-  .get('/devices', (ctx, next) => {
-    ctx.body = 'now the imsis are in redis, think about this';
-  })
-  .get('/ip/:id', (ctx, next) => {
-    let result = {
-      error: 'unkonw imsi'
+const redis = require("redis");
+var redis_client = redis.createClient(6380, settings.redis.url, {
+    auth_pass: settings.redis.key,
+    tls: {
+        servername: settings.redis.url
     }
-    redis_client.get(ctx.params.id, function (err, reply) {
-      if (err)
-        result = err
-      else
-        result = {
-          ip: reply
-        }
-      ctx.body = result;
-    });
-  })
-  .get('/tag', (ctx, next) => {
-    ctx.body = {
-      text: "reading requested"
-        };
-  })
-  .get('/observe', (ctx, next) => {
-    debug(`[coap app] observe ------> [${name}]: observe ${ctx.request.query.deviceId}`);
-    process.send({
-      type: 'coap_observe',
-      deviceId: ctx.request.query.deviceId
-    })
-    ctx.body = {
-      text: "observe requested"
-        };
-  })
-  .post('/config', koaBody(),
-    (ctx) => {
-      /*
-      process.send({
-        type: 'c2d',
-        body: ctx.request.body
-      });
-      */
-      debug(settings);
-      debug(ctx.request.body.hostname);
-      /*
-      ctx.body = {
-        ip: ip
-      };
-      */
-    });
+});
 
-module.exports = api_server;
+redis_client.on('connect', function () {
+    redis_client.auth(settings.redis.key, (err) => {
+        if (err) debug(err);
+        else debug(`${name} spawned: ${process.pid}`);
+
+    })
+}); 
+app.get('/', function (req, res) {
+  res.send('Hello Index')
+})
+
+app.get('/tag', function (req, res) {
+    redis_client.get(req.query.deviceId, function (err, reply) {  
+        if (err)
+          res.send(err) 
+          else {
+            res.send(JSON.parse(reply));
+        }
+    });  
+  })
+ 
+app.listen(3000);

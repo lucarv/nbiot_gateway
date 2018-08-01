@@ -21,38 +21,15 @@ redis_client.on('connect', function () {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'store_device':
-			debug(name + ': [master] STORE DEV ---> [az_redis]: ' + JSON.stringify(msg.device));
+		
+		case 'cache_write':
+			debug(name + ': [master] STORE DEV ---> [az_redis]: ' + JSON.stringify(msg));
+			let payload = JSON.parse(msg.payload)
+			payload['timestamp'] = new Date().toISOString();
+			let val = JSON.stringify(payload)
 			redis_client.set(
-				msg.device.ip,
-				msg.device.id);
-			redis_client.set(
-				msg.device.id,
-				msg.device.ip);
-			break;
-		case 'get_ID':
-			debug(name + ': [[master] GET_ID ---> [az_redis]: ' + msg.deviceIp);
-			redis_client.get(msg.deviceIp, function (err, reply) {
-				process.send({
-					type: 'got_ID',
-					deviceId: reply
-				});
-			});
-			break;
-		case 'get_IP':
-			debug(name + ': [[master] GET_IP ---> [az_redis]: ' + msg.deviceId);
-			redis_client.get(msg.deviceId, function (err, reply) {
-				process.send({
-					type: 'got_IP',
-					deviceIp: reply,
-					payload: msg.payload
-				});
-			});
-			break;
-		case 'delete_device':
-		debug(name + ': [master] REMOVE DEV ---> [az_redis]: ' + JSON.stringify(msg.device));
-		redis_client.del(msg.device.id);
-			redis_client.del(msg.device.ip);
+				msg.deviceId,
+				val);
 			break;
 		default:
 			break;

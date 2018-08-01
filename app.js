@@ -3,14 +3,23 @@
 const debug = require('debug')('nbiot_cloud_gw');
 const name = 'master';
 const cluster = require('cluster');
-const testFolder = './data/';
 const settings = require('./data/config.json');
 
 var worker;
-var devices = [];
+var dev2ip = [],
+	ip2dev = [];
 
-var start = function () {
+const getId = (IP) => {
+	let id = ip2dev.find(o => o.ip === IP);
+	return id;
+}
 
+const getIp = (ID) => {
+	let ip = dev2ip.find(o => o.id === ID);
+	return ip;
+}
+
+var start = () => {
 	if (cluster.isMaster) {
 		// Count the machine's CPUs
 		var cpuCount = require('os').cpus().length;
@@ -22,10 +31,18 @@ var start = function () {
 		for (var i = 0; i < cpuCount; i += 1) {
 			worker = cluster.fork();
 			worker.on('message', (msg) => {
+				var found = false;
 				switch (msg.type) {
 					case 'pdp_ON':
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
-						devices.push(msg.device);
+						dev2ip.push({
+							"id": msg.device.id,
+							"ip": msg.device.ip
+						});
+						ip2dev.push({
+							"ip": msg.device.ip,
+							"id": msg.device.id
+						});
 						worker.send({
 							type: 'conn_DEV',
 							device: msg.device
@@ -34,7 +51,6 @@ var start = function () {
 							type: 'store_device',
 							device: msg.device
 						});
-
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
@@ -48,29 +64,36 @@ var start = function () {
 						});
 						break;
 					case 'observe':
-					debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
+						debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
 						worker.send({
 							type: 'observe',
 							device: msg.device
 						});
 						break;
-					case 'd2c':
-						debug(`${name}: [udp server] d2c ------> [master]: from (${(msg.deviceIp)})`);
+					case 'coap_get':
+						debug(`${name}: [hub server] COAP GET ------> [master]: ${msg.ctx.request.query}`);
 						worker.send({
-							type: 'get_ID',
-							deviceIp: msg.deviceIp
+							type: 'get_value',
+							ctx: msg.ctx
 						});
 						break;
-					case 'got_ID':
-						debug(`${name}: [az redis] gotID ------> [master]: (${(msg.deviceId)})`);
-						var found = devices.find(o => o.id === msg.deviceId);
-						if (!found)
-							debug(`device at ${msg.deviceId} not currently registered, ignore the message`)
-						else
+					case 'd2c':
+						debug(`${name}: [(coap/udp) server] d2c ------> [master]`);
+						found = getId(msg.deviceIp);
+						if (found) {
 							worker.send({
 								type: 'd2c',
-								deviceId: found.id
+								deviceId: found.id,
+								payload: msg.payload
 							});
+							worker.send({
+								type: 'cache_write',
+								deviceId: found.id,
+								payload: msg.payload
+							});							
+						}
+						else
+							debug(`${name}: no such device when d2c`)
 						break;
 					case 'c2d':
 						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
@@ -78,8 +101,7 @@ var start = function () {
 						worker.send(msg);
 						break;
 					case 'got_IP':
-						debug(`${name}: [az redis] gotIP ------> [master]: (${(msg.deviceIp)})`);
-						var found = devices.find(o => o.ip === msg.deviceIp);
+						found = getIp(msg.deviceId);
 						if (!found)
 							debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
 						else {
@@ -112,7 +134,8 @@ var start = function () {
 }
 
 if (!settings.hasOwnProperty('hostname')) {
-	console.log('not configured. type npm run-script config on the console');
+	console.log('not configured. run npm run-script config on the console');
 } else start();
+
 
 module.exports.start = start;

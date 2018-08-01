@@ -14,7 +14,7 @@ This App provides an interface for NB-IoT devices to interact with Azure IoT Hub
 The device communication can be done on IPv4 or IPv6, all the other communication will be over IPv4.  
 
 ## Gateway considerations
-![](static/internal.png?raw=true)
+![](static/int1.png?raw=true)
 
 The gateway is a cluster with as many worker nodes as there are CPUs in the host machine.  It can be executed stand-alone just typing _npm start_ or _npm run-script debug_ at the command prompt.  
 
@@ -28,8 +28,8 @@ It can be run as a docker container by typing
     "connectionString": <get the iothubowner CS from your Iot Hub in Azure>,
     "ipVersion": "udp4" (or ipv6),
     "redis": {
-        "key": <get the that from your Redis Cahce in Azure>,
-        "url": <get the that from your Redis Cahce in Azure>
+        "key": <get the that from your Redis Cache in Azure>,
+        "url": <get the that from your Redis Cache in Azure>
     },
     "ports": {
         "radius": "1815",
@@ -50,6 +50,7 @@ The GW uses The following ports:
 * UDP port 5683 for CoAP
 * TCP port 8080 for API calls  
   
+---
 **Use Case 1:**  
 An UDP device sends a raw datagram to the GW that forwards to IoT Hub over AMQP.  
 The message can be anything you want and in the device simulator included in this repo you can type whatever you like at the command prompt.  
@@ -64,6 +65,12 @@ Note that this example will let applications observe all CoAP devices that can b
 An application requests to send a message to a device as a raw datagram via the GW.    
 ![](static/c2d1.png?raw=true)
 
+  
+**Use Case 4:**  
+An application requests the last reported tag from a device using a REST API.
+![](static/api.png?raw=true)
+
+---
 ## How to run it locally
 1. Provision your devices on your IoT Hub.
 2. Start the GW (npm start). Edit the environment variables to point at the correct IoT Hub.
@@ -73,3 +80,11 @@ An application requests to send a message to a device as a raw datagram via the 
 
 **NOTE**  
 Both the GW and the IoT Hub are payload agnostic, and it is up to the application layer to parse the messages.
+
+**TO DO**
+* DTLS Support
+* Resource discovery
+* Proxy caching
+* Multicast
+* C2D to CoAP device
+* Proper API management

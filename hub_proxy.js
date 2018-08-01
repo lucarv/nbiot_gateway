@@ -47,10 +47,10 @@ process.on('message', async function (msg) {
 				else {
 					let t = twin.tags.deviceType
 					if (t === 'coap')
-					process.send({
-						type: 'observe',
-						device: msg.device
-					});
+						process.send({
+							type: 'observe',
+							device: msg.device
+						});
 				}
 			});
 			devices.push(msg.device);
@@ -58,7 +58,6 @@ process.on('message', async function (msg) {
 			let p = gateway.addDevice(msg.device.id);
 			addDevicePromises.push(p);
 			await Promise.all(addDevicePromises);
-
 			break;
 		case 'disconn_DEV':
 			debug(`${name}: [master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
@@ -70,10 +69,9 @@ process.on('message', async function (msg) {
 			await Promise.all(addDevicePromises);
 			break;
 		case 'd2c':
-			//send this UDP datagram to the ipAddress of the imsi
+			//send this datagram to the ipAddress of the imsi
 			debug(`${name}: [master] d2c ----> [hub_proxy]: from (${msg.deviceId})`);
 			var message = new Message(msg.payload);
-
 			try {
 				await gateway.sendMessage(msg.deviceId, message);
 			} catch (error) {

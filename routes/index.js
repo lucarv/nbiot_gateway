@@ -1,43 +1,31 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const jf = require('jsonfile');
 const redis = require("redis");
+var redis_client = redis.createClient(6380, settings.redis.url, {
+    auth_pass: settings.redis.key,
+    tls: {
+        servername: settings.redis.url
+    }
+});
+
+redis_client.on('connect', function () {
+    redis_client.auth(settings.redis.key, (err) => {
+        if (err) debug(err);
+        else debug(`${name} spawned: ${process.pid}`);
+
+    })
+});
 
 //routing
-router.get('/', function (req, res, next) {
-  res.send('nothing here');
-});
+router.get('/tag', function (req, res, next) {
+    debug(name + ': [[master] GET_IP ---> [az_redis]: ' + req.query);
+    /*
 
-router.get('/config', function (req, res, next) {
-  res.render('config', {
-    title: 'Config Page',
-  });
-});
+    */
 
-router.post('/config', function (req, res, next) {
-  let connstr = req.body.cs;
-  let end = connstr.indexOf(';', 0);
-  let hostname = (connstr.slice(0, end));
-  let config = {
-    "hostname": hostname,
-    "connectionString": req.body.cs,
-    "ipVersion": req.body.ipv,
-    "redis": {
-      key: req.body.rkey,
-      url: req.body.rurl
-    },
-    "ports": {
-      "radius": req.body.radius,
-      "udp_raw_d2c": req.body.d2c,
-      "udp_raw_c2d": req.body.c2d,
-      "coap": req.body.coap
-    }
-  }
+    res.send('nothing here');
 
-  jf.writeFileSync('./data/config.json', config);
-  res.json(config);
-  process.exit();
 });
 
 module.exports = router;
