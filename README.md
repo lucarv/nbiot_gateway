@@ -22,6 +22,8 @@ It can be run as a docker container by typing
  ```
  (sudo) docker run -it --name nig -v [some path in the host disk]:/usr/src/app/data -p1815:1815/UDP -p41234:41234/UDP -p41235:41235/UDP -p5683:5683/UDP lucarv/nbiot_iothub_gateway
 ```
+---  
+
  The application needs a configuration file called config.json as follows:
  ```
  {
@@ -41,7 +43,7 @@ It can be run as a docker container by typing
 ```
 (Note that the ports above can be changed according to your IP Network planning)
 
-The GW can be deployed in a kubernets cluster (yaml in this repo, as a monolithical docker application (docker pull lucarv/nbiot-gateway) or on any machine with node installed.  
+The GW can be deployed in a kubernetes cluster (yaml in this repo, as a docker application (docker pull lucarv/nbiot-gateway) or on any machine with node installed.  
 
 The GW uses The following ports:
 * UDP port 1815 for RADIUS
