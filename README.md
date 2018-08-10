@@ -20,7 +20,9 @@ The gateway is a cluster with as many worker nodes as there are CPUs in the host
 
 It can be run as a docker container by typing  
  ```
- (sudo) docker run -it --name nig -v [some path in the host disk]:/usr/src/app/data -p1815:1815/UDP -p41234:41234/UDP -p41235:41235/UDP -p5683:5683/UDP lucarv/nbiot_iothub_gateway
+ (sudo) docker run -it --name nig --network host -v [some path in the host disk]:/usr/src/app/data -p1815:1815/UDP -p41234:41234/UDP -p41235:41235/UDP -p5683:5683/UDP lucarv/nbiot_iothub_gateway
+
+ Note that the gateway needs to run outside docker bridge adapter to get hold of the devices IP addresses
 ```
 ---  
 

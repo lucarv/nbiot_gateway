@@ -23,14 +23,13 @@ process.on('message', (msg) => {
 	switch (msg.type) {
 		
 		case 'cache_write':
-			debug(name + ': [master] STORE DEV ---> [az_redis]: ' + JSON.stringify(msg));
+			debug(name + ': [master] cahce write (future use) ---> [az_redis] ');
 			let payload = JSON.parse(msg.payload)
 			payload['timestamp'] = new Date().toISOString();
 			let val = JSON.stringify(payload)
 			redis_client.set(
 				msg.deviceId,
 				val);
-				console.log(payload)
 			break;
 		default:
 			break;

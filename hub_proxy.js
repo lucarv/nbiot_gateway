@@ -46,6 +46,7 @@ process.on('message', async function (msg) {
 				if (err) debug(` device not provisioned, ignore `);
 				else {
 					let t = twin.tags.deviceType
+					debug(`${name}: [master] CONN_DEV ----> [hub_proxy]: ${msg.device.id} | TYPE is: ${t}`);
 					if (t === 'coap')
 						process.send({
 							type: 'observe',
@@ -54,7 +55,6 @@ process.on('message', async function (msg) {
 				}
 			});
 			devices.push(msg.device);
-			debug(`${name}: [master] CONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
 			let p = gateway.addDevice(msg.device.id);
 			addDevicePromises.push(p);
 			await Promise.all(addDevicePromises);
@@ -74,6 +74,8 @@ process.on('message', async function (msg) {
 			var message = new Message(msg.payload);
 			try {
 				await gateway.sendMessage(msg.deviceId, message);
+				debug(`${name}: message sent to IoT Hub over AMQP`);
+
 			} catch (error) {
 				debug(name + ': Could not send message to IoT Hub: ' + error);
 			}

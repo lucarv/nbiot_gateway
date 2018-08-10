@@ -25,6 +25,8 @@ d2c.on('error', (err) => {
 
 d2c.on('message', (buffer, rinfo) => {
 	debug(`${name}: [device] d2c ------> [udp server] from ${rinfo.address}`);
+
+	debug(JSON.stringify(rinfo));
 	process.send({
 		type: 'd2c',
 		deviceIp: rinfo.address,
