@@ -23,7 +23,7 @@ process.on('message', (msg) => {
 	switch (msg.type) {
 		
 		case 'cache_write':
-			debug(name + ': [master] cahce write (future use) ---> [az_redis] ');
+			debug(name + ': [master] cache write ---> [az_redis] ');
 			let payload = JSON.parse(msg.payload)
 			payload['timestamp'] = new Date().toISOString();
 			let val = JSON.stringify(payload)
