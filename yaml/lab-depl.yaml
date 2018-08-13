@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tnnbiotgateway-lab-prd
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tnnbiotgateway-lab-prd
+    spec:
+    spec:
+      containers:
+      - name: tnnbiotgateway-lab-prd-redis
+        image: index.docker.io/cdtglenn/tnnbiotgateway:latest
+        ports:
+        - containerPort: 6379
+          name: redis
+      imagePullPolicy: Always
+      imagepullSecrets:
+        -name: tnkeyglenn
+      containers:
+      - name: tnnbiotgateway-lab-prd-gateway
+        image: index.docker.io/cdtglenn/tnnbiotgateway:latest
+        ports:
+        - containerPort: 443
+          name: port443
+        - containerPort: 80
+          name: port80
+        - containerPort: 8080
+          name: port8080
+        - containerPort: 3000
+          name: port3000
+        - containerPort: 1815
+          name: radius
+          protocol: UDP
+        - containerPort: 41234
+          name: udp-d2c
+          protocol: UDP
+        - containerPort: 41235
+          name: udp-c2d
+          protocol: UDP
+        - containerPort: 5683
+          name: coap
+          protocol: UDP
+      imagePullPolicy: Always
+      imagePullSecrets:
+        - name: tnkeyglenn

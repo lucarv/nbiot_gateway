@@ -16,6 +16,8 @@ The device communication can be done on IPv4 or IPv6, all the other communicatio
 ## Gateway considerations
 ![](static/int1.png?raw=true)
 
+The GW can be deployed in a kubernetes cluster (yaml for AKS in this repo), as a docker application (docker pull lucarv/nbiot-gateway) or on any machine with node installed.  
+
 The gateway is a cluster with as many worker nodes as there are CPUs in the host machine.  It can be executed stand-alone just typing _npm start_ or _npm run-script debug_ at the command prompt.  
 
 It can be run as a docker container by typing  
@@ -45,7 +47,6 @@ It can be run as a docker container by typing
 ```
 (Note that the ports above can be changed according to your IP Network planning)
 
-The GW can be deployed in a kubernetes cluster (yaml in this repo, as a docker application (docker pull lucarv/nbiot-gateway) or on any machine with node installed.  
 
 The GW uses The following ports:
 * UDP port 1815 for RADIUS

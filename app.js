@@ -35,22 +35,26 @@ var start = () => {
 				switch (msg.type) {
 					case 'pdp_ON':
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
-						dev2ip.push({
-							"id": msg.device.id,
-							"ip": msg.device.ip
-						});
-						ip2dev.push({
-							"ip": msg.device.ip,
-							"id": msg.device.id
-						});
-						worker.send({
-							type: 'conn_DEV',
-							device: msg.device
-						});
-						worker.send({
-							type: 'store_device',
-							device: msg.device
-						});
+						var found = ip2dev.find(o => o.ip === msg.device.ip);
+						if (!found) {
+							dev2ip.push({
+								"id": msg.device.id,
+								"ip": msg.device.ip
+							});
+							ip2dev.push({
+								"ip": msg.device.ip,
+								"id": msg.device.id
+							});
+							worker.send({
+								type: 'conn_DEV',
+								device: msg.device
+							});
+							worker.send({
+								type: 'store_device',
+								device: msg.device
+							});
+						} else
+							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
@@ -90,9 +94,8 @@ var start = () => {
 								type: 'cache_write',
 								deviceId: found.id,
 								payload: msg.payload
-							});							
-						}
-						else
+							});
+						} else
 							debug(`${name}: no such device when d2c`)
 						break;
 					case 'c2d':

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tnnbiotgateway-lab-prd-udp
+spec:
+  type: LoadBalancer
+  selector:
+    app: tnnbiotgateway-lab-prd
+  ports:
+  - port: 1815
+    name: radius
+    protocol: UDP
+  - port: 41234
+    name: udp-d2c
+    protocol: UDP
+  - port: 41235
+    name: udp-c2d
+    protocol: UDP
+  - port: 5683
+    name: coap
+    protocol: UDP
