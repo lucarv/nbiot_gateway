@@ -6,11 +6,18 @@ const settings = require('./data/config.json');
 
 var express = require('express')
 var app = express()
+var device_array = []
 
-/*
 process.on('message', async function (msg) {
-	switch (msg.type) {
-*/
+    switch (msg.type) {
+        case 'store_device_array':
+            console.log(msg);
+            break;
+        default:
+            break;
+    }
+})
+
 const redis = require("redis");
 var redis_client = redis.createClient(6380, settings.redis.url, {
     auth_pass: settings.redis.key,
@@ -25,28 +32,28 @@ redis_client.on('connect', function () {
         else debug(`${name} spawned: ${process.pid}`);
 
     })
-}); 
+});
 app.get('/', function (req, res) {
-  res.send('Hello Index')
+    res.send('Hello Index')
 })
 
 app.get('/devices', function (req, res) {
-    redis_client.get(req.query.deviceId, function (err, reply) {  
+    redis_client.get(req.query.deviceId, function (err, reply) {
         if (err)
-          res.send(err) 
-          else {
+            res.send(err)
+        else {
             res.send(JSON.parse(reply));
         }
-    });  
-  })
+    });
+})
 app.get('/tag', function (req, res) {
-    redis_client.get(req.query.deviceId, function (err, reply) {  
+    redis_client.get(req.query.deviceId, function (err, reply) {
         if (err)
-          res.send(err) 
-          else {
+            res.send(err)
+        else {
             res.send(JSON.parse(reply));
         }
-    });  
-  })
- 
+    });
+})
+
 app.listen(3000);

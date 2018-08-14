@@ -55,6 +55,7 @@ var start = () => {
 								device: msg.device
 							});
 							worker.send({
+								type: 'store_device_array',
 								devices: dev2ip
 							})
 						} else
