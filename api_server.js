@@ -7,9 +7,10 @@ const settings = require('./data/config.json');
 var express = require('express')
 var app = express()
 
+/*
 process.on('message', async function (msg) {
 	switch (msg.type) {
-        
+*/
 const redis = require("redis");
 var redis_client = redis.createClient(6380, settings.redis.url, {
     auth_pass: settings.redis.key,
