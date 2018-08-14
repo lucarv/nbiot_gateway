@@ -68,16 +68,16 @@ var start = () => {
 							if (index > -1) {
 								console.log('device removed from cache')
 								ip2dev.splice(index, 1);
+								worker.send({
+									type: 'delete_device',
+									device: msg.device
+								});
+								worker.send({
+									type: 'disconn_DEV',
+									device: msg.device
+								});
 							}
 						}
-						worker.send({
-							type: 'delete_device',
-							device: msg.device
-						});
-						worker.send({
-							type: 'disconn_DEV',
-							device: msg.device
-						});
 						break;
 					case 'observe':
 						debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
