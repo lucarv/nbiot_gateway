@@ -66,6 +66,7 @@ var start = () => {
 							let index = ip2dev.indexOf(found);
 							console.log(index)
 							if (index > -1) {
+								console.log(device removed from cahce)
 								ip2dev.splice(index, 1);
 							}
 						}
