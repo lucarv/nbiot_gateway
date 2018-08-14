@@ -53,11 +53,16 @@ var start = () => {
 								type: 'store_device',
 								device: msg.device
 							});
+							worker.send({
+								devices: dev2ip
+							})
 						} else
 							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
+						var found = ip2dev.find(o => o.ip === msg.device.ip);
+						console.log(fond + ' acc stop')
 						worker.send({
 							type: 'delete_device',
 							device: msg.device

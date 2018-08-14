@@ -7,6 +7,9 @@ const settings = require('./data/config.json');
 var express = require('express')
 var app = express()
 
+process.on('message', async function (msg) {
+	switch (msg.type) {
+        
 const redis = require("redis");
 var redis_client = redis.createClient(6380, settings.redis.url, {
     auth_pass: settings.redis.key,
@@ -26,6 +29,15 @@ app.get('/', function (req, res) {
   res.send('Hello Index')
 })
 
+app.get('/devices', function (req, res) {
+    redis_client.get(req.query.deviceId, function (err, reply) {  
+        if (err)
+          res.send(err) 
+          else {
+            res.send(JSON.parse(reply));
+        }
+    });  
+  })
 app.get('/tag', function (req, res) {
     redis_client.get(req.query.deviceId, function (err, reply) {  
         if (err)

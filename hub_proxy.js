@@ -9,7 +9,7 @@ const azure_iot_common = require("azure-iot-common");
 const iothub = require('azure-iothub');
 const registry = iothub.Registry.fromConnectionString(connectionString);
 const Message = require('azure-iot-device').Message;
-const Gateway = require('./lib/Gateway.js').Gateway;
+const Gateway = require('azure-iot-multiplexing-gateway').Gateway;
 const gateway = new Gateway();
 var devices = [];
 var addDevicePromises = [];
@@ -61,7 +61,7 @@ process.on('message', async function (msg) {
 			break;
 		case 'disconn_DEV':
 			debug(`${name}: [master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
-			let detached = gateway.delDevice(msg.device.id);
+			let detached = gateway.removeDevice(msg.device.id);
 			let index = addDevicePromises.indexOf(detached);
 			if (index > -1) {
 				addDevicePromises.splice(index, 1);
