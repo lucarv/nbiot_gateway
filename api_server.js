@@ -11,7 +11,7 @@ var device_array = []
 process.on('message', async function (msg) {
     switch (msg.type) {
         case 'store_device_array':
-            console.log(msg);
+            device_array = msg.devices;
             break;
         default:
             break;
@@ -34,17 +34,11 @@ redis_client.on('connect', function () {
     })
 });
 app.get('/', function (req, res) {
-    res.send('Hello Index')
+    res.send('Nothing Here Mat')
 })
 
 app.get('/devices', function (req, res) {
-    redis_client.get(req.query.deviceId, function (err, reply) {
-        if (err)
-            res.send(err)
-        else {
-            res.send(JSON.parse(reply));
-        }
-    });
+    res.send(device_array);
 })
 app.get('/tag', function (req, res) {
     redis_client.get(req.query.deviceId, function (err, reply) {
@@ -56,4 +50,4 @@ app.get('/tag', function (req, res) {
     });
 })
 
-app.listen(settings.ports.api);
+module.exports.app = app;
