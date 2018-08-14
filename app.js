@@ -35,6 +35,7 @@ var start = () => {
 				switch (msg.type) {
 					case 'pdp_ON':
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
+						debug(ip2dev)
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (!found) {
 							dev2ip.push({
@@ -61,6 +62,7 @@ var start = () => {
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
+						debug(ip2dev)
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (found) {
 							let index = ip2dev.indexOf(found);
@@ -78,6 +80,8 @@ var start = () => {
 								});
 							}
 						}
+						else
+							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'observe':
 						debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
