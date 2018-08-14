@@ -62,7 +62,13 @@ var start = () => {
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						console.log(found)
+						if (found) {
+							let index = ip2dev.indexOf(found);
+							console.log(index)
+							if (index > -1) {
+								ip2dev.splice(index, 1);
+							}
+						}
 						worker.send({
 							type: 'delete_device',
 							device: msg.device
