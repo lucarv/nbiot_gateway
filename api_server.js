@@ -56,4 +56,4 @@ app.get('/tag', function (req, res) {
     });
 })
 
-app.listen(3000);
+app.listen(settings.ports.api);
