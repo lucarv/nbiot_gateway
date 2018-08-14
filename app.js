@@ -62,7 +62,7 @@ var start = () => {
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						console.log(fond + ' acc stop')
+						console.log(found + ' acc stop')
 						worker.send({
 							type: 'delete_device',
 							device: msg.device
