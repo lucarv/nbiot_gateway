@@ -66,9 +66,7 @@ var start = () => {
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (found) {
 							let index = ip2dev.indexOf(found);
-							console.log(index)
 							if (index > -1) {
-								console.log('device removed from cache')
 								ip2dev.splice(index, 1);
 								worker.send({
 									type: 'delete_device',
