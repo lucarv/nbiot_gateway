@@ -42,6 +42,8 @@ app.get('/', function (req, res) {
 })
 
 app.get('/devices', function (req, res) {
+    debug(`[app] get devices ---->${name}: ${JSON.stringify(msg.devices)}`);
+
     res.send(device_array);
 })
 app.get('/tag', function (req, res) {
