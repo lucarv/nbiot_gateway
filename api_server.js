@@ -11,6 +11,7 @@ var device_array = []
 process.on('message', async function (msg) {
     switch (msg.type) {
         case 'store_device_array':
+        debug(`[master] store_device_array ---->${name}: ${msg.device.id} | TYPE is: ${JSON.stringify(msg.devices)}`);
             device_array = msg.devices;
             break;
         default:
