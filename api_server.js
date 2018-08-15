@@ -29,8 +29,8 @@ app.get('/', function (req, res) {
 
 app.get('/devices', function (req, res) {
     redis_client.get('devices', function (err, reply) {
-        debug(`[app] get devices ---->${name}: ${JSON.stringify(reply)}`);
-        res.send(device_array);
+        debug(`[app] get devices ---->${name}`);
+        res.send(JSON.parse(reply));
     });
 })
 
