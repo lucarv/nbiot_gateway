@@ -26,6 +26,9 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
     }
 });
 
+const start = 
+
+
 redis_client.on('connect', function () {
     redis_client.auth(settings.redis.key, (err) => {
         if (err) debug(err);
@@ -49,5 +52,7 @@ app.get('/tag', function (req, res) {
         }
     });
 })
+
+debug(`${name}:  [pid:${process.pid}] listening on port: ${settings.ports.api}`);
 
 module.exports.app = app;

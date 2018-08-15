@@ -6,7 +6,9 @@ const redis = require("redis");
 
 //routing
 
-router.get('/config', function (req, res, next) {
+
+
+router.get('/', function (req, res, next) {
   res.render('config', {
     title: 'Config Page',
   });
