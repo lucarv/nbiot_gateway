@@ -16,22 +16,19 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
     }
 });
 
-const start =
+redis_client.on('connect', function () {
+    redis_client.auth(settings.redis.key, (err) => {
+        if (err) debug(err);
+        else debug(`${name} spawned: ${process.pid}`);
 
-
-    redis_client.on('connect', function () {
-        redis_client.auth(settings.redis.key, (err) => {
-            if (err) debug(err);
-            else debug(`${name} spawned: ${process.pid}`);
-
-        })
-    });
+    })
+});
 app.get('/', function (req, res) {
     res.send('Nothing Here Mat')
 })
 
 app.get('/devices', function (req, res) {
-    redis_client.get("devices", function (err, reply) {
+    redis_client.get('devices', function (err, reply) {
         debug(`[app] get devices ---->${name}: ${JSON.stringify(reply)}`);
         res.send(device_array);
     });
