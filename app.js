@@ -52,12 +52,8 @@ var start = () => {
 							});
 							worker.send({
 								type: 'store_device',
-								device: msg.device
-							});
-							worker.send({
-								type: 'store_device_array',
 								devices: dev2ip
-							})
+							});
 						} else
 							debug(`${name}: ignore faulty radius`);
 						break;

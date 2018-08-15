@@ -8,17 +8,6 @@ var express = require('express')
 var app = express()
 var device_array = []
 
-process.on('message', async function (msg) {
-    switch (msg.type) {
-        case 'store_device_array':
-        debug(`[master] store_device_array ---->${name}: ${JSON.stringify(msg.devices)}`);
-            device_array = msg.devices;
-            break;
-        default:
-            break;
-    }
-})
-
 const redis = require("redis");
 var redis_client = redis.createClient(6380, settings.redis.url, {
     auth_pass: settings.redis.key,
@@ -27,25 +16,27 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
     }
 });
 
-const start = 
+const start =
 
 
-redis_client.on('connect', function () {
-    redis_client.auth(settings.redis.key, (err) => {
-        if (err) debug(err);
-        else debug(`${name} spawned: ${process.pid}`);
+    redis_client.on('connect', function () {
+        redis_client.auth(settings.redis.key, (err) => {
+            if (err) debug(err);
+            else debug(`${name} spawned: ${process.pid}`);
 
-    })
-});
+        })
+    });
 app.get('/', function (req, res) {
     res.send('Nothing Here Mat')
 })
 
 app.get('/devices', function (req, res) {
-    debug(`[app] get devices ---->${name}: ${JSON.stringify(msg.devices)}`);
-
-    res.send(device_array);
+    redis_client.get("devices", function (err, reply) {
+        debug(`[app] get devices ---->${name}: ${JSON.stringify(reply)}`);
+        res.send(device_array);
+    });
 })
+
 app.get('/tag', function (req, res) {
     redis_client.get(req.query.deviceId, function (err, reply) {
         if (err)
