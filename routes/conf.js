@@ -30,7 +30,8 @@ router.post('/config', function (req, res, next) {
       "radius": req.body.radius,
       "udp_raw_d2c": req.body.d2c,
       "udp_raw_c2d": req.body.c2d,
-      "coap": req.body.coap
+      "coap": req.body.coap,
+      "api": req.body.api
     }
   }
 
