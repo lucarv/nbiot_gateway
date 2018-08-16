@@ -21,12 +21,6 @@ redis_client.on('connect', function () {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'store_devices':
-			debug(name + ': [master] store device ---> [az_redis] ');
-			let key = 'devices';
-			let devices = JSON.stringify(msg.devices);
-			redis_client.set(key, devices, redis.print);
-			break;
 		case 'cache_write':
 			debug(name + ': [master] cache write ---> [az_redis] ');
 			let payload = JSON.parse(msg.payload)

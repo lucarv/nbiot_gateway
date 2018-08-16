@@ -27,9 +27,16 @@ app.get('/', function (req, res) {
     res.send('Nothing Here Mat')
 })
 
-app.get('/devices', function (req, res) {
-    redis_client.get('devices', function (err, reply) {
+app.get('/ids', function (req, res) {
+    redis_client.get('ids', function (err, reply) {
         debug(`[app] get devices ---->${name}`);
+        res.send(JSON.parse(reply));
+    });
+})
+
+app.get('/ips', function (req, res) {
+    redis_client.get('ips', function (err, reply) {
+        debug(`[app] get ips ---->${name}`);
         res.send(JSON.parse(reply));
     });
 })

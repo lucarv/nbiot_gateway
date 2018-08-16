@@ -12,25 +12,18 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
 	}
 });
 redis_client.on('connect', function () {
-    redis_client.auth(settings.redis.key, (err) => {
-        if (err) debug(err);
-        else debug(`${name} connected to redis`);
-
-    })
+	redis_client.auth(settings.redis.key, (err) => {
+		if (err) debug(err);
+		else {
+			redis_client.flushdb(function (err, reply) { // make sure no older registrations are lingering on the cache
+				if (err) debug(`${name}: err`);
+			});
+		}
+	})
 });
 var worker;
 var dev2ip = [],
 	ip2dev = [];
-
-const getId = (IP) => {
-	let id = ip2dev.find(o => o.ip === IP);
-
-	redis_client.get(IP, function (err, reply) {
-		console.log('GET DEV ID FROM IP: ' + reply);
-	});
-
-	return id;
-}
 
 const getIp = (ID) => {
 	let ip = dev2ip.find(o => o.id === ID);
@@ -55,6 +48,11 @@ var start = () => {
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (!found) {
+							worker.send({ // add to AMQP connection Pool
+								type: 'conn_DEV',
+								device: msg.device
+							});
+							// add to maps and store in redis
 							dev2ip.push({
 								"id": msg.device.id,
 								"ip": msg.device.ip
@@ -63,42 +61,30 @@ var start = () => {
 								"ip": msg.device.ip,
 								"id": msg.device.id
 							});
-							worker.send({
-								type: 'conn_DEV',
-								device: msg.device
-							});
-							let key = 'devices';
-							let devices = JSON.stringify(dev2ip);
-							redis_client.set(key, devices);
-							key = 'ip';
-							let ips = JSON.stringify(ip2dev);
-							redis_client.set(key, ips);
+							redis_client.set('ids', JSON.stringify(dev2ip));
+							redis_client.set('ips', JSON.stringify(ip2dev));
 						} else
 							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						if (found) {
-							console.log('FOUND >>>>>>>>> ' + found)
-							console.log('REMOVE FROM TABLE')
-
-							let index = ip2dev.indexOf(found);
-							if (index > -1) {
-								ip2dev.splice(index, 1);
-								let key = 'devices';
-								let devices = JSON.stringify(dev2ip);
-								redis_client.set(key, devices);
-								key = 'ip';
-								let ips = JSON.stringify(ip2dev);
-								redis_client.set(key, ips);
-								worker.send({
-									type: 'disconn_DEV',
-									device: msg.device
-								});
-							}
-						}
-						else
+						if (found) { // remove this device from the maps and redis
+							worker.send({ // remove from AMQP Connection Pool
+								type: 'disconn_DEV',
+								device: msg.device
+							});
+							// remove from maps and redis
+							let indexIP = ip2dev.indexOf(found);
+							ip2dev.splice(indexIP, 1);
+							redis_client.set('ips', JSON.stringify(ip2dev));
+							let indexDEV = dev2ip.indexOf({
+								"id": found.id,
+								"ip": found.ip
+							})
+							dev2ip.splice(indexDEV, 1);
+							redis_client.set('ids', JSON.stringify(dev2ip));
+						} else
 							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'observe':
@@ -117,20 +103,27 @@ var start = () => {
 						break;
 					case 'd2c':
 						debug(`${name}: [(coap/udp) server] d2c ------> [master]`);
-						found = getId(msg.deviceIp);
-						if (found) {
-							worker.send({
-								type: 'd2c',
-								deviceId: found.id,
-								payload: msg.payload
-							});
-							worker.send({
-								type: 'cache_write',
-								deviceId: found.id,
-								payload: msg.payload
-							});
-						} else
-							debug(`${name}: no such device when d2c`)
+						redis_client.get('ips', function (err, reply) {
+							if (err) debug(`${name}: err`);
+							else {
+								let deviceArray = JSON.parse(reply);
+								if (deviceArray) {
+									let found = deviceArray.find(o => o.ip === msg.deviceIp);
+									if (found) {
+										worker.send({ // send to IoT Hub
+											type: 'd2c',
+											deviceId: found.id,
+											payload: msg.payload
+										});
+										worker.send({ // save last sent message from device
+											type: 'cache_write',
+											deviceId: found.id,
+											payload: msg.payload
+										});
+									} else debug(`${name}: device not registered, discarding message`);
+								} else debug(`${name}: NO devices registered, discarding message`);
+							}
+						});
 						break;
 					case 'c2d':
 						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
@@ -160,7 +153,6 @@ var start = () => {
 				}
 			});
 		}
-
 		// Listen for dying workers
 		cluster.on('exit', function () {
 			cluster.fork();
@@ -173,6 +165,5 @@ var start = () => {
 if (!settings.hasOwnProperty('hostname')) {
 	console.log('not configured. run npm run-script config on the console');
 } else start();
-
 
 module.exports.start = start;
