@@ -67,26 +67,31 @@ var start = () => {
 								type: 'conn_DEV',
 								device: msg.device
 							});
-							worker.send({
-								type: 'store_devices',
-								devices: ip2dev
-							});
+							let key = 'devices';
+							let devices = JSON.stringify(dev2ip);
+							redis_client.set(key, devices, null);
+							let key = 'ip';
+							let ips = JSON.stringify(ip2dev);
+							redis_client.set(key, ips, null);
 						} else
 							debug(`${name}: ignore faulty radius`);
 						break;
 					case 'pdp_OFF':
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
-						debug(ip2dev)
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (found) {
+							console.log('FOUND >>>>>>>>> ' + found)
+							console.log('REMOVE FROM TABLE')
+
 							let index = ip2dev.indexOf(found);
 							if (index > -1) {
 								ip2dev.splice(index, 1);
-								console.log(ip2dev)
-								worker.send({
-									type: 'store_devices',
-									devices: ip2dev
-								});
+								let key = 'devices';
+								let devices = JSON.stringify(dev2ip);
+								redis_client.set(key, devices, null);
+								let key = 'ip';
+								let ips = JSON.stringify(ip2dev);
+								redis_client.set(key, ips, null);
 								worker.send({
 									type: 'disconn_DEV',
 									device: msg.device
