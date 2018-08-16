@@ -70,7 +70,7 @@ var start = () => {
 							let key = 'devices';
 							let devices = JSON.stringify(dev2ip);
 							redis_client.set(key, devices, null);
-							let key = 'ip';
+							key = 'ip';
 							let ips = JSON.stringify(ip2dev);
 							redis_client.set(key, ips, null);
 						} else
