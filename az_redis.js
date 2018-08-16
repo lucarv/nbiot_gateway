@@ -21,7 +21,7 @@ redis_client.on('connect', function () {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'store_device':
+		case 'store_devices':
 			debug(name + ': [master] store device ---> [az_redis] ');
 			let key = 'devices';
 			let devices = JSON.stringify(msg.devices);

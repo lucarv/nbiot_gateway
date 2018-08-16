@@ -35,7 +35,6 @@ var start = () => {
 				switch (msg.type) {
 					case 'pdp_ON':
 						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
-						debug(ip2dev)
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
 						if (!found) {
 							dev2ip.push({
@@ -51,7 +50,7 @@ var start = () => {
 								device: msg.device
 							});
 							worker.send({
-								type: 'store_device',
+								type: 'store_devices',
 								devices: dev2ip
 							});
 						} else
@@ -66,8 +65,8 @@ var start = () => {
 							if (index > -1) {
 								ip2dev.splice(index, 1);
 								worker.send({
-									type: 'delete_device',
-									device: msg.device
+									type: 'store_devices',
+									devices: dev2ip
 								});
 								worker.send({
 									type: 'disconn_DEV',
