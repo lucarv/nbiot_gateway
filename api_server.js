@@ -11,15 +11,12 @@ var device_array = []
 const redis = require("redis");
 var redis_client = redis.createClient(6380, settings.redis.url, {
     auth_pass: settings.redis.key,
-    tls: {
-        servername: settings.redis.url
-    }
+    tls: { servername: settings.redis.url }
 });
 
 redis_client.on('connect', function () {
     redis_client.auth(settings.redis.key, (err) => {
         if (err) debug(err);
-        else debug(`${name} connected to redis`);
 
     })
 });
@@ -29,14 +26,14 @@ app.get('/', function (req, res) {
 
 app.get('/ids', function (req, res) {
     redis_client.get('ids', function (err, reply) {
-        debug(`[app] get devices ---->${name}`);
+        debug(`GET IDs message from [app] to [${name}]`);
         res.send(JSON.parse(reply));
     });
 })
 
 app.get('/ips', function (req, res) {
     redis_client.get('ips', function (err, reply) {
-        debug(`[app] get ips ---->${name}`);
+        debug(`GET IPs message from [app] to [${name}]`);
         res.send(JSON.parse(reply));
     });
 })
@@ -50,7 +47,5 @@ app.get('/tag', function (req, res) {
         }
     });
 })
-
-debug(`${name}:  [pid:${process.pid}] listening on port: ${settings.ports.api}`);
 
 module.exports.app = app;

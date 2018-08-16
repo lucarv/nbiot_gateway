@@ -1,7 +1,7 @@
 'use strict';
 'esversion:6';
 const debug = require('debug')('nbiot_cloud_gw');
-const name = 'master';
+const name = 'cluster_master';
 const cluster = require('cluster');
 const settings = require('./data/config.json');
 var redis = require("redis");
@@ -25,98 +25,105 @@ var worker;
 var dev2ip = [],
 	ip2dev = [];
 
-const getIp = (ID) => {
-	let ip = dev2ip.find(o => o.id === ID);
-	return ip;
-}
-
 var start = () => {
 	if (cluster.isMaster) {
 		// Count the machine's CPUs
 		var cpuCount = require('os').cpus().length;
 		require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-			debug(name + ' running on: ' + add + ' not useful if running in a container');
-		})
-
+			if (err) debug(`can't start [${name}]: ${err}`);
+			debug(`[${name}] started on ${add}`);
+		});
 		// Create a worker for each CPU
 		for (var i = 0; i < cpuCount; i += 1) {
 			worker = cluster.fork();
+
 			worker.on('message', (msg) => {
 				var found = false;
 				switch (msg.type) {
-					case 'pdp_ON':
-						debug(`${name}: [gw aaa] PDP_ON -------> [master]: ${msg.device.id}`);
-						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						if (!found) {
-							worker.send({ // add to AMQP connection Pool
-								type: 'conn_DEV',
-								device: msg.device
-							});
-							// add to maps and store in redis
-							dev2ip.push({
-								"id": msg.device.id,
-								"ip": msg.device.ip
-							});
-							ip2dev.push({
-								"ip": msg.device.ip,
-								"id": msg.device.id
-							});
-							redis_client.set('ids', JSON.stringify(dev2ip));
-							redis_client.set('ips', JSON.stringify(ip2dev));
-						} else
-							debug(`${name}: ignore faulty radius`);
-						break;
-					case 'pdp_OFF':
-						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
-						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						if (found) { // remove this device from the maps and redis
-							worker.send({ // remove from AMQP Connection Pool
-								type: 'disconn_DEV',
-								device: msg.device
-							});
-							// remove from maps and redis
-							let indexIP = ip2dev.indexOf(found);
-							ip2dev.splice(indexIP, 1);
-							redis_client.set('ips', JSON.stringify(ip2dev));
-							let indexDEV = dev2ip.indexOf({
-								"id": found.id,
-								"ip": found.ip
-							})
-							dev2ip.splice(indexDEV, 1);
-							redis_client.set('ids', JSON.stringify(dev2ip));
-						} else
-							debug(`${name}: ignore faulty radius`);
-						break;
-					case 'observe':
-						debug(`${name}: [hub server] OBSERVE ------> [master]: ${msg.device.id}`);
-						worker.send({
-							type: 'observe',
-							device: msg.device
-						});
-						break;
-					case 'coap_get':
-						debug(`${name}: [hub server] COAP GET ------> [master]: ${msg.ctx.request.query}`);
-						worker.send({
-							type: 'get_value',
-							ctx: msg.ctx
-						});
-						break;
-					case 'd2c':
-						debug(`${name}: [(coap/udp) server] d2c ------> [master]`);
+					case 'PDP_ON':
+						debug(`PDP_ON message from [radius_front_end] to [${name}]`);
 						redis_client.get('ips', function (err, reply) {
 							if (err) debug(`${name}: err`);
 							else {
-								let deviceArray = JSON.parse(reply);
-								if (deviceArray) {
-									let found = deviceArray.find(o => o.ip === msg.deviceIp);
+								let ipArray = JSON.parse(reply);
+								if (!ipArray) ipArray = []; // this is the first ever PDP_ON
+								let found = ipArray.find(o => o.ip === msg.device.ip);
+								if (found) debug(`${name}: ignore faulty radius`);
+								else {
+									worker.send({ // add to AMQP connection Pool
+										type: 'CONN_DEV',
+										device: msg.device
+									});
+									dev2ip.push({ // add to maps
+										"id": msg.device.id,
+										"ip": msg.device.ip
+									});
+									ip2dev.push({
+										"ip": msg.device.ip,
+										"id": msg.device.id
+									});
+									// add to maps
+									redis_client.set('ids', JSON.stringify(dev2ip));
+									redis_client.set('ips', JSON.stringify(ip2dev));
+								}
+							}
+						});
+						break;
+					case 'PDP_OFF':
+						debug(`PDP_OFF message from [radius_front_end] to [${name}]`);
+						redis_client.get('ips', function (err, reply) {
+							if (err) debug(`${name}: err`);
+							else {
+								let ipArray = JSON.parse(reply);
+								let found = ipArray.find(o => o.ip === msg.device.ip);
+								if (found) {
+									worker.send({ // remove from AMQP Connection Pool
+										type: 'DISCONN_DEV',
+										device: msg.device
+									});
+									// remove from maps 
+									let indexIP = ip2dev.indexOf(found);
+									ip2dev.splice(indexIP, 1);
+									let indexDEV = dev2ip.indexOf({
+										"id": found.id,
+										"ip": found.ip
+									})
+									dev2ip.splice(indexDEV, 1);
+									//remove from redis
+									redis_client.set('ips', JSON.stringify(ip2dev));
+									redis_client.set('ids', JSON.stringify(dev2ip));
+								} else
+									debug(`${name}: ignore faulty radius`);
+							};
+						});
+						break;
+					case 'OBSERVE':
+						debug(`OBSERVE message from [hub_server] to [${name}]`);
+						worker.send({
+							type: 'OBSERVE',
+							device: msg.device
+						});
+						break;
+					case 'COAP_GET':
+						debug(`COAP_GET message from [api_server] to [${name}]`);
+						//NOT YET IMPLEMENTED
+						break;
+					case 'D2C':
+						debug(`D2C message from [coap or udp] server to [${name}]`);
+						redis_client.get('ips', function (err, reply) {
+							if (err) debug(`${name}: err`);
+							else {
+								let ipArray = JSON.parse(reply);
+								if (ipArray) {
+									let found = ipArray.find(o => o.ip === msg.deviceIp);
 									if (found) {
 										worker.send({ // send to IoT Hub
-											type: 'd2c',
+											type: 'D2C',
 											deviceId: found.id,
 											payload: msg.payload
 										});
 										worker.send({ // save last sent message from device
-											type: 'cache_write',
+											type: 'CACHE_WRITE',
 											deviceId: found.id,
 											payload: msg.payload
 										});
@@ -125,26 +132,27 @@ var start = () => {
 							}
 						});
 						break;
-					case 'c2d':
-						debug(`${name}: [udp server] c2d ------> [master]: to (${msg.deviceId})`);
-						msg.type = 'get_IP';
-						worker.send(msg);
+					case 'C2D':
+						debug(`C2D message from [coap or udp] server to [${name}]`);
+						redis_client.get('ids', function (err, reply) {
+							if (err) debug(`${name}: err`);
+							else {
+								let devArray = JSON.parse(reply);
+								let found = devArray.find(o => o.id === msg.deviceId);
+								if (found) {
+									worker.send({ // send to device over raw UDP
+										type: 'C2D',
+										deviceIp: found.ip,
+										payload: msg.payload
+									});
+								}
+							}
+						});
 						break;
-					case 'got_IP':
-						found = getIp(msg.deviceId);
-						if (!found)
-							debug(`device at ${msg.deviceIp} not currently registered, ignore the message`)
-						else {
-							debug(msg)
-							msg.type = 'c2d';
-							msg.deviceIp = found.ip;
-							worker.send(msg);
-						}
-						break;
-					case 'coap_observe':
-						debug(`[api_server] coap_observe ------> [${name}]: (${msg.deviceId})`);
+					case 'COAP_OSERVE':
+						debug(`C2D message from [api_server] server to [${name}]`);
 						worker.send({
-							type: 'observe',
+							type: 'OBSERVE',
 							deviceId: msg.deviceId
 						});
 						break;
@@ -160,7 +168,7 @@ var start = () => {
 	} else {
 		require('./launcher');
 	}
-}
+};
 
 if (!settings.hasOwnProperty('hostname')) {
 	console.log('not configured. run npm run-script config on the console');

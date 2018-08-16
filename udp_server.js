@@ -15,7 +15,6 @@ const c2d = dgram.createSocket(ipv);
 
 d2c.on('listening', () => {
 	const address = d2c.address();
-	debug(`${name}:  [pid:${process.pid}] listening on port: ${address.port}`);
 });
 
 d2c.on('error', (err) => {
@@ -24,11 +23,9 @@ d2c.on('error', (err) => {
 });
 
 d2c.on('message', (buffer, rinfo) => {
-	debug(`${name}: [device] d2c ------> [udp server] from ${rinfo.address}`);
-
-	debug(JSON.stringify(rinfo));
+	debug(`D2C message from [${rinfo.address}] to [${name}]`);
 	process.send({
-		type: 'd2c',
+		type: 'D2C',
 		deviceIp: rinfo.address,
 		payload: buffer.toString()
 	});
@@ -36,11 +33,11 @@ d2c.on('message', (buffer, rinfo) => {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'c2d':
-			debug(`${name}: [master] c2d ------> [udp server]:  send ${msg.payload} to ${msg.deviceIp}`);
+		case 'C2D':
+			debug(`D2C message from [cluster_master] to [${name}]`);
 			c2d.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
 				if (err) debug(name+': error when attempting to send c2d: ' + err);
-				else debug(`sent ${bytes} to device`);
+				else debug(`[${name}] sent a payload of ${bytes} bytes to device: ${(msg.deviceIp)}`);
 			});
 			break;
 		default:

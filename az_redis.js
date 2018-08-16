@@ -14,15 +14,13 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
 redis_client.on('connect', function () {
 	redis_client.auth(settings.redis.key, (err) => {
 		if (err) debug(err);
-		else debug(`${name} spawned: ${process.pid}`);
-
 	})
 });
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'cache_write':
-			debug(name + ': [master] cache write ---> [az_redis] ');
+		case 'CACHE_WRITE':
+			debug(`CACHE_WRITE message from [cluster_master] to [${name}]`);
 			let payload = JSON.parse(msg.payload)
 			payload['timestamp'] = new Date().toISOString();
 			let val = JSON.stringify(payload)

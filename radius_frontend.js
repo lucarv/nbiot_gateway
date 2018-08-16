@@ -16,12 +16,13 @@ radiusfe.on("message", function (msg, rinfo) {
       
     switch (packet.attributes["Acct-Status-Type"]) {
       case 'Start':
-        type = 'pdp_ON';
-        debug(name+': [cn aaa] ACC_START ----> [gw aaa]: ' + rinfo.address);
+        type = 'PDP_ON';
+        debug(`PDP_ON  message from [core network] to [${name}]`);
+
         break;
       case 'Stop':
-        type = 'pdp_OFF';
-        debug(name+': [cn aaa] PDP_OFF----> [gw aaa]');
+        type = 'PDP_OFF';
+        debug(`PDP_OFF message from [core network] to [${name}]`);
         break;
       default:
         debug(name+': not a valid accounting operation, ignoring');
@@ -41,5 +42,4 @@ radiusfe.on("message", function (msg, rinfo) {
   }
 });
 
-debug(`${name}: spawned: ${process.pid}`);
 module.exports = radiusfe;

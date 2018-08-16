@@ -3,7 +3,6 @@ const name = 'coap-proxy';
 const settings = require('./data/config.json');
 const coap = require('coap');
 const coap_server = coap.createServer();
-debug(`${name}:  [pid:${process.pid}] spawned`);
 coap_server.listen(5683);
 
 coap_server.on('request', function (req, res) {
@@ -59,13 +58,15 @@ const observeDevice = (deviceIp) => {
 
 process.on('message', (msg) => {
     switch (msg.type) {
-        case 'observe':
+        case 'OBSERVE':
             debug(`[master] observe ------> [${name}]: observe ${msg.device.id}`);
+            debug(`OBSERVE message from [cluster_master] to [${name}]`);
+
             observeDevice(msg.device.ip);
             break;
-        case 'get_value':
-            debug(`[master] get_value ------> [${name}]:  ${msg.ctx.request.query}`);
-            queryDevice(msg.ctx)
+        case 'GET_VALUE':
+        debug(`GET_VALUE message from [cluster_master] to [${name}]`);
+        queryDevice(msg.ctx)
             break;
         default:
             break;

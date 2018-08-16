@@ -20,11 +20,11 @@ function foundId(id) {
 gateway.on('message', function (message) {
 	let payload = message.data.toString();
 	let deviceId = message.to.toString().split("/")[2];
-	debug(deviceId);
-	var found = devices.find(o => o.id === deviceId);
+	debug(`C2D message from [app] to [${name}]`);
+
 	process.send({
-		type: 'c2d',
-		deviceId: found.id,
+		type: 'C2D',
+		deviceId: deviceId,
 		payload: payload
 	});
 });
@@ -32,24 +32,23 @@ gateway.on('message', function (message) {
 const start = async function () {
 	try {
 		await gateway.open(connectionString);
-		debug(`${name}: [pid:${process.pid}] connected to IoT Hub`);
 	} catch (error) {
-		debug(error);
+		debug(`${name}: ${error}`);
 	}
 };
 
 process.on('message', async function (msg) {
 	switch (msg.type) {
-		case 'conn_DEV':
+		case 'CONN_DEV':
 			// check if device has been provisioned, if not, silently drop it
 			registry.getTwin(msg.device.id, (err, twin) => {
-				if (err) debug(` device not provisioned, ignore `);
+				if (err) debug(`${err}`);
 				else {
 					let t = twin.tags.deviceType
-					debug(`${name}: [master] CONN_DEV ----> [hub_proxy]: ${msg.device.id} | TYPE is: ${t}`);
+					debug(`CONN_DEV message from [master] to [${name}]`);
 					if (t === 'coap')
 						process.send({
-							type: 'observe',
+							type: 'OBSERVE',
 							device: msg.device
 						});
 				}
@@ -59,22 +58,21 @@ process.on('message', async function (msg) {
 			addDevicePromises.push(p);
 			await Promise.all(addDevicePromises);
 			break;
-		case 'disconn_DEV':
-			debug(`${name}: [master] disCONN_DEV ----> [hub_proxy]: ${msg.device.id}`);
-			let detached = gateway.removeDevice(msg.device.id);
+		case 'DISCONN_DEV':
+		debug(`DISCONN_DEV message from [master] to [${name}]`);
+		let detached = gateway.removeDevice(msg.device.id);
 			let index = addDevicePromises.indexOf(detached);
 			if (index > -1) {
 				addDevicePromises.splice(index, 1);
 			}
 			await Promise.all(addDevicePromises);
 			break;
-		case 'd2c':
+		case 'D2C':
 			//send this datagram to the ipAddress of the imsi
-			debug(`${name}: [master] d2c ----> [hub_proxy]: from (${msg.deviceId})`);
+			debug(`D2C message from [master] to [${name}]`);
 			var message = new Message(msg.payload);
 			try {
 				await gateway.sendMessage(msg.deviceId, message);
-				debug(`${name}: message sent to IoT Hub over AMQP`);
 
 			} catch (error) {
 				debug(name + ': Could not send message to IoT Hub: ' + error);
