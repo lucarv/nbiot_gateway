@@ -69,10 +69,10 @@ var start = () => {
 							});
 							let key = 'devices';
 							let devices = JSON.stringify(dev2ip);
-							redis_client.set(key, devices, null);
+							redis_client.set(key, devices);
 							key = 'ip';
 							let ips = JSON.stringify(ip2dev);
-							redis_client.set(key, ips, null);
+							redis_client.set(key, ips);
 						} else
 							debug(`${name}: ignore faulty radius`);
 						break;
@@ -88,10 +88,10 @@ var start = () => {
 								ip2dev.splice(index, 1);
 								let key = 'devices';
 								let devices = JSON.stringify(dev2ip);
-								redis_client.set(key, devices, null);
+								redis_client.set(key, devices);
 								key = 'ip';
 								let ips = JSON.stringify(ip2dev);
-								redis_client.set(key, ips, null);
+								redis_client.set(key, ips);
 								worker.send({
 									type: 'disconn_DEV',
 									device: msg.device
