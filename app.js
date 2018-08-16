@@ -11,6 +11,11 @@ var dev2ip = [],
 
 const getId = (IP) => {
 	let id = ip2dev.find(o => o.ip === IP);
+
+	redis_client.get(IP, function (err, reply) {
+		console.log('GET DEV ID FROM IP: ' + reply);
+	});
+
 	return id;
 }
 
