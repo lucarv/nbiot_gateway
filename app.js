@@ -66,6 +66,8 @@ var start = () => {
 							let index = ip2dev.indexOf(found);
 							if (index > -1) {
 								ip2dev.splice(index, 1);
+								console.log(ip2dev)
+
 								worker.send({
 									type: 'store_devices',
 									devices: dev2ip
