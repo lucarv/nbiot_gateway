@@ -4,7 +4,20 @@ const debug = require('debug')('nbiot_cloud_gw');
 const name = 'master';
 const cluster = require('cluster');
 const settings = require('./data/config.json');
+var redis = require("redis");
+var redis_client = redis.createClient(6380, settings.redis.url, {
+	auth_pass: settings.redis.key,
+	tls: {
+		servername: settings.redis.url
+	}
+});
+redis_client.on('connect', function () {
+    redis_client.auth(settings.redis.key, (err) => {
+        if (err) debug(err);
+        else debug(`${name} connected to redis`);
 
+    })
+});
 var worker;
 var dev2ip = [],
 	ip2dev = [];

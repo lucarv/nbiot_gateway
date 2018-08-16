@@ -19,7 +19,7 @@ var redis_client = redis.createClient(6380, settings.redis.url, {
 redis_client.on('connect', function () {
     redis_client.auth(settings.redis.key, (err) => {
         if (err) debug(err);
-        else debug(`${name} spawned: ${process.pid}`);
+        else debug(`${name} connected to redis`);
 
     })
 });
