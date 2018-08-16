@@ -60,8 +60,6 @@ var start = () => {
 						debug(`${name}: [gw aaa] PDP_OFF ------> [master]: ${msg.device.id}`);
 						debug(ip2dev)
 						var found = ip2dev.find(o => o.ip === msg.device.ip);
-						console.log('Looking for: ' + msg.device.ip)
-						console.log(found)
 						if (found) {
 							let index = ip2dev.indexOf(found);
 							if (index > -1) {
