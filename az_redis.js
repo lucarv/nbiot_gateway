@@ -25,6 +25,7 @@ process.on('message', (msg) => {
 			debug(name + ': [master] store device ---> [az_redis] ');
 			let key = 'devices';
 			let devices = JSON.stringify(msg.devices);
+			console.log('redis: ' + devices)
 			redis_client.set(key, devices, redis.print);
 			break;
 		case 'cache_write':
