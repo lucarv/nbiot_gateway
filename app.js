@@ -51,7 +51,7 @@ var start = () => {
 							});
 							worker.send({
 								type: 'store_devices',
-								devices: dev2ip
+								devices: ip2dev
 							});
 						} else
 							debug(`${name}: ignore faulty radius`);
@@ -67,10 +67,9 @@ var start = () => {
 							if (index > -1) {
 								ip2dev.splice(index, 1);
 								console.log(ip2dev)
-
 								worker.send({
 									type: 'store_devices',
-									devices: dev2ip
+									devices: ip2dev
 								});
 								worker.send({
 									type: 'disconn_DEV',
