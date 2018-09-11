@@ -12,6 +12,10 @@ NBIOT -> Azure IoT HuB cloud-gw
 ![](static/arch1.png?raw=true)
 This App provides an interface for NB-IoT devices to interact with Azure IoT Hub, while it still not supporting UDP and able to terminate VPNs.
 The device communication can be done on IPv4 or IPv6, all the other communication will be over IPv4.  
+It supports two types of communication protocols, raw udp and coap (OBSERVE only from GW). Devices should be tagged in IoT Hub to specify the device type. The device twin of the device must contain the following:
+"tags": {
+        "deviceTupe": _("raw" or "coap")_
+    }
 
 ## Gateway considerations
 ![](static/int1.png?raw=true)
