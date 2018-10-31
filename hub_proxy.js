@@ -22,8 +22,12 @@ gateway.on('message', function (message) {
 	let deviceId = message.to.toString().split("/")[2];
 	debug(`C2D message from [app] to [${name}]`);
 
+	//to do - check what is the device type and choose the message type below accordingly
+	//currently assuming UDP
+
+	let msg_type = ´C2D_UDP',
 	process.send({
-		type: 'C2D',
+		type: msg_type,
 		deviceId: deviceId,
 		payload: payload
 	});
@@ -59,8 +63,8 @@ process.on('message', async function (msg) {
 			await Promise.all(addDevicePromises);
 			break;
 		case 'DISCONN_DEV':
-		debug(`DISCONN_DEV message from [master] to [${name}]`);
-		let detached = gateway.removeDevice(msg.device.id);
+			debug(`DISCONN_DEV message from [master] to [${name}]`);
+			let detached = gateway.removeDevice(msg.device.id);
 			let index = addDevicePromises.indexOf(detached);
 			if (index > -1) {
 				addDevicePromises.splice(index, 1);

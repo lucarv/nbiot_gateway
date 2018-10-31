@@ -1,4 +1,4 @@
-'use strict';
+    'use strict';
 'esversion:6';
 const settings = require('./data/config.json');
 const api_server = require('./api_server').app

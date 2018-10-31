@@ -65,8 +65,11 @@ process.on('message', (msg) => {
             observeDevice(msg.device.ip);
             break;
         case 'GET_VALUE':
-        debug(`GET_VALUE message from [cluster_master] to [${name}]`);
-        queryDevice(msg.ctx)
+            debug(`GET_VALUE message from [cluster_master] to [${name}]`);
+            queryDevice(msg.ctx)
+            break;
+        case 'C2D_CoAP':
+            // implement sending of CoAP POST or PUT to device here
             break;
         default:
             break;

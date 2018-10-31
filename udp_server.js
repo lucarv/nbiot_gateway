@@ -33,7 +33,7 @@ d2c.on('message', (buffer, rinfo) => {
 
 process.on('message', (msg) => {
 	switch (msg.type) {
-		case 'C2D':
+		case 'C2D_UDP':
 			debug(`D2C message from [cluster_master] to [${name}]`);
 			c2d.send(msg.payload, 0, msg.payload.length, settings.ports.udp_raw_c2d, msg.deviceIp, function (err, bytes) {
 				if (err) debug(name+': error when attempting to send c2d: ' + err);
